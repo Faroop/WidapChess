@@ -84,27 +84,27 @@ std::string Piece::type2Name(PieceType type)
 	switch (type)
 	{
 	case KING:
-		return "King";
+		return "king";
 		break;
 		
 	case QUEEN:
-		return "Queen";
+		return "queen";
 		break;
 		
 	case ROOK:
-		return "Rook";
+		return "rook";
 		break;
 		
 	case KNIGHT:
-		return "Knight";
+		return "knight";
 		break;
 		
 	case BISHOP:
-		return "Bishop";
+		return "bishop";
 		break;
 		
 	case PAWN:
-		return "Pawn";
+		return "pawn";
 		break;
 	}
 	
@@ -183,10 +183,16 @@ bool Game::playMove(Square s, Square e)
 	s.clamp();
 	e.clamp();
 	
+	if (s.x==e.x && s.y==e.y)
+	{
+		err << "start and end squares are the same" << err;
+		return false;
+	}
+	
 	if (!board(s))
 	{
-		err << "no piece at source " << s.str() << err;
-		return 0;
+		err << "no piece on starting square" << err;
+		return false;
 	}
 	
 	if (checkMovePath(s, e))
@@ -206,7 +212,13 @@ bool Game::checkMovePath(Square s, Square e)
 	//get piece
 	Piece p=*board(s);
 	
-	//all pawn movement
+	if (board(e) && board(e)->color==p.color)
+	{
+		err << "you cannot move onto a square already occupied by one of your pieces" << err;
+		return false;
+	}
+	
+	//all pawn stuff
 	if (p.type==PAWN)
 	{
 		//forward pawn movement
@@ -235,7 +247,7 @@ bool Game::checkMovePath(Square s, Square e)
 			if (s.y+(p.color==WHITE?1:-1)==e.y)
 			{
 				//normal capture
-				if (board(e) && board(e)->color!=p.color)
+				if (board(e))
 				{
 					return true;
 				}
@@ -279,6 +291,105 @@ bool Game::checkMovePath(Square s, Square e)
 		else
 		{
 			err << "pawn must move straight or digaonal" << err;
+			return false;
+		}
+	}
+	
+	if (p.type==KNIGHT)
+	{
+		if ((abs(s.x-e.x)==2 && abs(s.y-e.y)==1) || (abs(s.x-e.x)==1 && abs(s.y-e.y)==2))
+		{
+			return true;
+		}
+		else
+		{
+			err << "knight must move in an 'L' shape" << err;
+			return false;
+		}
+	}
+	
+	if (p.type==KING)
+	{
+		if (abs(s.x-e.x)<=1 && abs(s.y-e.y)<=1)
+		{
+			return true;
+		}
+		else
+		{
+			err << "king can only move one space at a time" << err;
+			return false;
+		}
+	}
+	
+	//straight moves
+	if (s.x==e.x || s.y==e.y)
+	{
+		if (p.type==ROOK || p.type==QUEEN)
+		{
+			Piece * p0;
+			
+			if (s.x==e.x)
+			{
+				if (s.y<e.y)
+				{
+					for (int i=s.y+1; i<e.y; --i)
+					{
+						if ((p0=board(Square(s.x, i))))
+						{
+							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+				else
+				{
+					for (int i=s.y-1; i>e.y; --i)
+					{
+						if ((p0=board(Square(s.x, i))))
+						{
+							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+			}
+			else
+			{
+				if (s.x<e.x)
+				{
+					for (int i=s.x+1; i<e.x; --i)
+					{
+						if ((p0=board(Square(i, s.y))))
+						{
+							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+				else
+				{
+					for (int i=s.x-1; i>e.x; --i)
+					{
+						if ((p0=board(Square(i, s.y))))
+						{
+							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+			}
+		}
+		else
+		{
+			err << Piece::type2Name(p.type) << " can not move straight" << err;
 			return false;
 		}
 	}
