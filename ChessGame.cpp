@@ -347,9 +347,41 @@ bool Game::checkMovePath(Square s, Square e)
 		{
 			return true;
 		}
+		//castling
+		else if (s.y==e.y && s.y==(p.color==WHITE?0:7) && abs(e.x-s.x)==2)
+		{
+			Square rookSqr((s.x<e.x?0:7), s.y);
+			
+			if (board(rookSqr) && board(rookSqr)->type==ROOK && board(rookSqr)->color==p.color)
+			{
+				std::list<Move>::const_iterator i;
+				
+				for (i=history.begin(); i!=history.end(); ++i)
+				{
+					Square sqr=i->s;
+					if (sqr.x==s.x && sqr.y==s.y)
+					{
+						err << "king has moved and therefor you cannot castle" << err;
+						return false;
+					}
+					
+					if (sqr.x==rookSqr.x && sqr.y==rookSqr.y)
+					{
+						err << "rook has moved and therefor you cannot castle" << err;
+						return false;
+					}
+				}
+				
+				return true;
+			}
+			else
+			{
+				err << "rook is not in position to castle" << err;
+			}
+		}
 		else
 		{
-			err << "king can only move one space at a time" << err;
+			err << "king can only move one space at a time with the exception of castling" << err;
 			return false;
 		}
 	}
@@ -365,7 +397,7 @@ bool Game::checkMovePath(Square s, Square e)
 			{
 				if (s.y<e.y)
 				{
-					for (int i=s.y+1; i<e.y; --i)
+					for (int i=s.y+1; i<e.y; ++i)
 					{
 						if ((p0=board(Square(s.x, i))))
 						{
@@ -394,7 +426,7 @@ bool Game::checkMovePath(Square s, Square e)
 			{
 				if (s.x<e.x)
 				{
-					for (int i=s.x+1; i<e.x; --i)
+					for (int i=s.x+1; i<e.x; ++i)
 					{
 						if ((p0=board(Square(i, s.y))))
 						{
@@ -427,7 +459,80 @@ bool Game::checkMovePath(Square s, Square e)
 		}
 	}
 	
-	err << "invalid move, probably piece not implemented" << err;
+	//digonal moves
+	if (abs(s.x-e.x)==abs(s.y-e.y))
+	{
+		if (p.type==BISHOP || p.type==QUEEN)
+		{
+			Piece * p0;
+			
+			if ((s.x>e.x)==(s.y>e.y))
+			{
+				if (s.y<e.y)
+				{
+					for (int i=1; i<e.x-s.x; ++i)
+					{
+						if ((p0=board(Square(s.x+i, s.y+i))))
+						{
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+				else
+				{
+					for (int i=1; i<s.x-e.x; ++i)
+					{
+						if ((p0=board(Square(s.x-i, s.y-i))))
+						{
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+			}
+			else
+			{
+				if (s.x<e.x)
+				{
+					for (int i=1; i<e.x-s.x; ++i)
+					{
+						if ((p0=board(Square(s.x+i, s.y-i))))
+						{
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+				else
+				{
+					for (int i=1; i<s.x-e.x; ++i)
+					{
+						if ((p0=board(Square(s.x-i, s.y+i))))
+						{
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							return false;
+						}
+						
+						return true;
+					}
+				}
+			}
+		}
+		else
+		{
+			err << pieceType2Name(p.type) << " can not move diagonal" << err;
+			return false;
+		}
+	}
+	
+	err << "invalid move, sorry I can't tell you more" << err;
 	return false;
 }
 
@@ -451,6 +556,17 @@ void Game::forceMove(Square s, Square e)
 	if (board(s)->type==PAWN && e.y==(board(s)->color==WHITE?7:0))
 	{
 		board(s)->type=pieceToPromoteTo[board(s)->type];
+	}
+	
+	//castling
+	if (board(s)->type==KING && abs(e.x-s.x)==2)
+	{
+		Piece * p=board(Square(s.x<e.x?7:0, s.y));
+		
+		if (p && p->type==ROOK)
+		{
+			forceMove(p->square, Square(s.x+(s.x<e.x?1:-1), s.y));
+		}
 	}
 	
 	board(e, board(s));

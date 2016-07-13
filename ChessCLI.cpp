@@ -83,7 +83,7 @@ void displayBoardCLI(Game * game)
 				else if (piece.type==QUEEN)  c="♕";
 				else if (piece.type==ROOK)   c="♖";
 				else if (piece.type==KNIGHT) c="♘";
-				else if (piece.type==BISHOP) c="♙";
+				else if (piece.type==BISHOP) c="♗";
 				else if (piece.type==PAWN)   c="♙";
 			}
 			else
