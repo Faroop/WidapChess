@@ -34,4 +34,5 @@
 #directories
 obj
 
-
+# codeblocks depend file
+*.depend

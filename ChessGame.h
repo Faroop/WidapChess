@@ -37,6 +37,8 @@ public:
 	Piece() {alive=0; color=NO_COLOR; type=QUEEN, square=Square(0, 0);}
 	Piece(PieceColor colorIn, PieceType typeIn, Square squareIn) {alive=1; color=colorIn; type=typeIn, square=squareIn;}
 	
+	static std::string type2Name(PieceType type);
+	
 	bool alive;
 	PieceColor color;
 	PieceType type;
@@ -61,6 +63,12 @@ public:
 	bool playMove(Square src, Square dst);
 	
 	Piece getPiece(Square square);
+	
+	std::string historyToStr();
+	
+	//the white and black piece that is promoted to when a pawn reaches the end
+	//a client may change them at any time; default is Queen
+	PieceType pieceToPromoteTo[2];
 	
 private:
 	
@@ -89,3 +97,5 @@ private:
 };
 
 }
+
+

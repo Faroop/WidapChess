@@ -79,6 +79,38 @@ void Square::clamp()
 	}
 }
 
+std::string Piece::type2Name(PieceType type)
+{
+	switch (type)
+	{
+	case KING:
+		return "King";
+		break;
+		
+	case QUEEN:
+		return "Queen";
+		break;
+		
+	case ROOK:
+		return "Rook";
+		break;
+		
+	case KNIGHT:
+		return "Knight";
+		break;
+		
+	case BISHOP:
+		return "Bishop";
+		break;
+		
+	case PAWN:
+		return "Pawn";
+		break;
+	}
+	
+	return "[no piece name]";
+}
+
 }
 
 namespace chess
@@ -87,6 +119,7 @@ namespace chess
 Game::Game()
 {
 	err.setPrefix("Chess game: ");
+	pieceToPromoteTo[0]=pieceToPromoteTo[1]=QUEEN;
 	setupBoard();
 }
 
@@ -207,18 +240,27 @@ bool Game::checkMovePath(Square s, Square e)
 					return true;
 				}
 				//en passante
-				else if (e.y==(p.color==WHITE?5:2) && board(Square(e.x, (p.color==WHITE?4:3))))
+				else if (e.y==(p.color==WHITE?5:2))
 				{
-					Square e0=history.end()->e;
-					if (e0.x==e.x && e0.y==(p.color==WHITE?4:3))
+					Piece * p0=board(Square(e.x, (p.color==WHITE?4:3)));
+					
+					if (p0 && p0->type==PAWN && p0->color!=p.color && !history.empty())
 					{
-						//move pawn back so it will be captured
-						forceMove(Square(e.x, (p.color==WHITE?4:3)), e);
-						return true;
+						Square e0=history.back().e;
+						
+						if (e0.x==e.x && e0.y==(p.color==WHITE?4:3))
+						{
+							return true;
+						}
+						else
+						{
+							err << "en passante only works if the other pawn just moved" << err;
+							return false;
+						}
 					}
 					else
 					{
-						err << "en passante only works if the other pawn just moved" << err;
+						err << "pawns can move diagonally only when capturing" << err;
 						return false;
 					}
 				}
@@ -231,14 +273,17 @@ bool Game::checkMovePath(Square s, Square e)
 			else
 			{
 				err << "pawn must always move and capture forward" << err;
+				return false;
 			}
 		}
 		else
 		{
 			err << "pawn must move straight or digaonal" << err;
+			return false;
 		}
 	}
 	
+	err << "invalid move, probably piece not implemented" << err;
 	return false;
 }
 
@@ -246,9 +291,46 @@ void Game::forceMove(Square s, Square e)
 {
 	if (board(e))
 		board(e)->alive=0;
+	
+	//en passante
+	if (board(s)->type==PAWN && s.x!=e.x && !board(e) && e.y==(board(s)->color==WHITE?5:2))
+	{
+		Square captSq=Square(e.x, (board(s)->color==WHITE?4:3));
+		if (board(captSq) && board(captSq)->type==PAWN && board(captSq)->color!=board(s)->color)
+		{
+			board(captSq)->alive=0;
+			board(captSq, 0);
+		}
+	}
+	
+	//promotion to queen (asking which piece to promote to will come much later in development)
+	if (board(s)->type==PAWN && e.y==(board(s)->color==WHITE?7:0))
+	{
+		board(s)->type=pieceToPromoteTo[board(s)->type];
+	}
+	
 	board(e, board(s));
 	board(s, 0);
 	board(e)->square=e;
+}
+
+string Game::historyToStr()
+{
+	string out;
+	std::list<Move>::const_iterator iterator;
+	
+	for (iterator=history.begin(); iterator!=history.end(); ++iterator)
+	{
+		Move mv=*iterator;
+		out+=Piece::type2Name(mv.p.type);
+		out+=" at ";
+		out+=mv.s.str();
+		out+=" to ";
+		out+=mv.e.str();
+		out+="\n";
+	}
+	
+	return out;
 }
 
 }
