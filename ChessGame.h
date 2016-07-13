@@ -30,14 +30,15 @@ public:
 enum PieceType {KING=0, QUEEN=1, ROOK=2, KNIGHT=3, BISHOP=4, PAWN=5};
 enum PieceColor {NO_COLOR=-1, WHITE=0, BLACK=1};
 
+std::string pieceType2Name(PieceType type);
+std::string pieceColor2Name(PieceColor color);
+
 class Piece
 {
 public:
 	
 	Piece() {alive=0; color=NO_COLOR; type=QUEEN, square=Square(0, 0);}
 	Piece(PieceColor colorIn, PieceType typeIn, Square squareIn) {alive=1; color=colorIn; type=typeIn, square=squareIn;}
-	
-	static std::string type2Name(PieceType type);
 	
 	bool alive;
 	PieceColor color;
@@ -90,6 +91,9 @@ private:
 	
 	Piece * boardData[8][8];
 	Piece pieces[32];
+	
+	//the color to make the next move
+	PieceColor colorToMove;
 	
 	std::list<Move> history;
 	

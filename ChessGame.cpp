@@ -79,7 +79,7 @@ void Square::clamp()
 	}
 }
 
-std::string Piece::type2Name(PieceType type)
+std::string pieceType2Name(PieceType type)
 {
 	switch (type)
 	{
@@ -111,6 +111,23 @@ std::string Piece::type2Name(PieceType type)
 	return "[no piece name]";
 }
 
+std::string pieceColor2Name(PieceColor color)
+{
+	switch (color)
+	{
+	case WHITE:
+		return "white";
+		break;
+		
+	case BLACK:
+		return "black";
+		break;
+		
+	default:
+		return "no color";
+	}
+}
+
 }
 
 namespace chess
@@ -120,6 +137,7 @@ Game::Game()
 {
 	err.setPrefix("Chess game: ");
 	pieceToPromoteTo[0]=pieceToPromoteTo[1]=QUEEN;
+	colorToMove=WHITE;
 	setupBoard();
 }
 
@@ -195,10 +213,17 @@ bool Game::playMove(Square s, Square e)
 		return false;
 	}
 	
+	if (board(s)->color!=colorToMove)
+	{
+		err << "it is " << pieceColor2Name(colorToMove) << "'s move" << err;
+		return false;
+	}
+	
 	if (checkMovePath(s, e))
 	{
 		forceMove(s, e);
 		history.insert(history.end(), {s, e, *board(e)});
+		if (colorToMove==WHITE) colorToMove=BLACK; else colorToMove=WHITE;
 		return true;
 	}
 	else
@@ -336,7 +361,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x, i))))
 						{
-							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 						
@@ -349,7 +374,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x, i))))
 						{
-							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 						
@@ -365,7 +390,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(i, s.y))))
 						{
-							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 						
@@ -378,7 +403,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(i, s.y))))
 						{
-							err << Piece::type2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 						
@@ -389,7 +414,7 @@ bool Game::checkMovePath(Square s, Square e)
 		}
 		else
 		{
-			err << Piece::type2Name(p.type) << " can not move straight" << err;
+			err << pieceType2Name(p.type) << " can not move straight" << err;
 			return false;
 		}
 	}
@@ -433,8 +458,10 @@ string Game::historyToStr()
 	for (iterator=history.begin(); iterator!=history.end(); ++iterator)
 	{
 		Move mv=*iterator;
-		out+=Piece::type2Name(mv.p.type);
-		out+=" at ";
+		out+=pieceColor2Name(mv.p.color);
+		out+=" ";
+		out+=pieceType2Name(mv.p.type);
+		out+=" from ";
 		out+=mv.s.str();
 		out+=" to ";
 		out+=mv.e.str();
