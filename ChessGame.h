@@ -13,6 +13,7 @@ class Square
 	
 public:
 	int x, y;
+	bool valid;
 	
 	Square() {x=0; y=0;}
 	Square(int xIn, int yIn);
@@ -48,7 +49,7 @@ public:
 
 struct Move
 {
-	Square s, e;
+	Square s, e; 
 	Piece p;
 };
 

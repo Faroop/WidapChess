@@ -1,9 +1,11 @@
 #include "ChessGame.h"
+
 #include <iostream>
 
 using std::string;
 using std::cout;
 using std::cin;
+using std::getline;
 using std::endl;
 
 using namespace chess;
@@ -13,18 +15,42 @@ void displayBoardCLI(Game * game);
 void mainChessCLI()
 {
 	Game game;
-	string moveStrSrc, moveGameDst;
+	string cmd;
+	bool quit=false;
 	
-	while (game.getWinner()==NO_COLOR)
+	while (!quit)
 	{
 		displayBoardCLI(&game);
+		bool valid=false;
 		
 		do
 		{
-			cin >> moveStrSrc;
-			cin >> moveGameDst;
+			getline(cin, cmd);
+			
+			if (cmd.length()==5 && cmd[2]==' ')
+			{
+				Square s(cmd.substr(0, 2)), e(cmd.substr(3, 5));
+				if (s.valid && e.valid && game.playMove(s, e))
+					valid=true;
+			}
+			else if (cmd=="quit")
+			{
+				quit=true;
+				valid=true;
+			}
+			else if (cmd=="help")
+			{
+				cout << "type in you move on one line like 'E2 E4' or type 'quit' to quit" << endl;
+			}
+			else
+			{
+				cout << "unrecognised command, type 'help' for help" << endl;
+			}
 		}
-		while (!game.playMove(moveStrSrc, moveGameDst));
+		while (!valid);
+		
+		if (game.getWinner()!=NO_COLOR)
+			quit=true;
 	}
 }
 

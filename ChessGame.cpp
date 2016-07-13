@@ -13,6 +13,7 @@ Square::Square(int xIn, int yIn)
 {
 	x=xIn;
 	y=yIn;
+	valid=true;
 	clamp();
 }
 
@@ -23,6 +24,7 @@ Square::Square(string str)
 		err << "Square sent string \"" << str << "\" with wrong length" << err;
 		x=0;
 		y=0;
+		valid=false;
 	}
 	
 	if (str[0]>='A' && str[0]<='H')
@@ -33,6 +35,7 @@ Square::Square(string str)
 	{
 		err << "Square sent string \"" << str << "\" with bad first character" << err;
 		x=0;
+		valid=false;
 	}
 		
 	if (str[1]>='1' && str[1]<='8')
@@ -41,6 +44,7 @@ Square::Square(string str)
 	{
 		err << "Square sent string \"" << str << "\" with bad second character" << err;
 		y=0;
+		valid=false;
 	}
 }
 
@@ -59,22 +63,26 @@ void Square::clamp()
 	if (x<0)
 	{
 		err << "x too low in square" << err;
+		valid=false;
 		x=0;
 	}
 	else if (x>7)
 	{
 		err << "x too high in square" << err;
+		valid=false;
 		x=7;
 	}
 	
 	if (y<0)
 	{
 		err << "y too low in square" << err;
+		valid=false;
 		y=0;
 	}
 	else if (y>7)
 	{
 		err << "y too high in square" << err;
+		valid=false;
 		y=7;
 	}
 }
