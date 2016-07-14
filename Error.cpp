@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-namespace widap
-{
-
 Error err("global error: ");
 
 void (*Error::defaultPost)(std::string)=defaultDefaultPost;
@@ -41,5 +38,4 @@ void Error::defaultDefaultPost(std::string in)
 	std::cout << in << std::endl;
 }
 
-}
 

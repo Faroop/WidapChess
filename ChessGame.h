@@ -98,7 +98,7 @@ private:
 	
 	std::list<Move> history;
 	
-	widap::Error err;
+	Error err;
 };
 
 }

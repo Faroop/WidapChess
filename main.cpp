@@ -3,14 +3,13 @@
 using namespace std;
 
 void mainChessCLI();
+void mainChessGUI();ss
 
 int main()
 {
-    std::cout << "Starting WidapChess CLI" << std::endl;
+	//mainChessCLI();
     
-	mainChessCLI();
-    
-    std::cout << "WidapChess CLI done" << std::endl;
+    mainChessGUI();
     
     return 0;
 }

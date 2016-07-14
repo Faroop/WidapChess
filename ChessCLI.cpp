@@ -12,7 +12,7 @@ using namespace chess;
 
 void displayBoardCLI(Game * game);
 
-void mainChessCLI()
+int main(int argc, char ** argv)
 {
 	Game game;
 	string cmd;
@@ -52,6 +52,8 @@ void mainChessCLI()
 		if (game.getWinner()!=NO_COLOR)
 			quit=true;
 	}
+	
+	return 0;
 }
 
 void displayBoardCLI(Game * game)

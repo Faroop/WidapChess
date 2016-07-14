@@ -29,15 +29,13 @@
 //second, if you call err.setPost([function pointer]) on an instance of Error, only that instance will use
 //	the function you provide.
 
-namespace widap
-{
-
 class Error
 {
 public:
 	Error();
 	Error(std::string prefixIn);
 	
+	//compiler gives a warning without this
 	~Error() {}
 	
 	//allows writing to the error message just like cout
@@ -79,5 +77,4 @@ private:
 
 extern Error err;
 
-}
 
