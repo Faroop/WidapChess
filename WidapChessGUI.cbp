@@ -18,7 +18,7 @@
 			<Target title="Release">
 				<Option output="WidapChessGUI" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
-				<Option type="1" />
+				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
@@ -30,7 +30,48 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 		</Compiler>
+		<Linker>
+			<Add option="-lsfml-graphics" />
+			<Add option="-lsfml-window" />
+			<Add option="-lsfml-system" />
+		</Linker>
+		<Unit filename="../WidapLib2/h/Color.h" />
+		<Unit filename="../WidapLib2/h/ComplexMath.h" />
+		<Unit filename="../WidapLib2/h/Drawable.h" />
+		<Unit filename="../WidapLib2/h/Error.h" />
+		<Unit filename="../WidapLib2/h/Image.h" />
+		<Unit filename="../WidapLib2/h/ImageBase.h" />
+		<Unit filename="../WidapLib2/h/SimpMath.h" />
+		<Unit filename="../WidapLib2/h/StringFuncs.h" />
+		<Unit filename="../WidapLib2/h/TextBase.h" />
+		<Unit filename="../WidapLib2/h/TextLineFont.h" />
+		<Unit filename="../WidapLib2/h/Timer.h" />
+		<Unit filename="../WidapLib2/h/Vector.h" />
+		<Unit filename="../WidapLib2/h/Vector2D.h" />
+		<Unit filename="../WidapLib2/h/Vector3D.h" />
+		<Unit filename="../WidapLib2/h/WindowBase.h" />
+		<Unit filename="../WidapLib2/h/WindowSFML.h" />
+		<Unit filename="../WidapLib2/src/Color.cpp" />
+		<Unit filename="../WidapLib2/src/ComplexMath.cpp" />
+		<Unit filename="../WidapLib2/src/Drawable.cpp" />
+		<Unit filename="../WidapLib2/src/Error.cpp" />
+		<Unit filename="../WidapLib2/src/Image.cpp" />
+		<Unit filename="../WidapLib2/src/ImageBase.cpp" />
+		<Unit filename="../WidapLib2/src/StringFuncs.cpp" />
+		<Unit filename="../WidapLib2/src/TextBase.cpp" />
+		<Unit filename="../WidapLib2/src/TextLineFont.cpp" />
+		<Unit filename="../WidapLib2/src/Timer.cpp" />
+		<Unit filename="../WidapLib2/src/WindowBase.cpp" />
+		<Unit filename="../WidapLib2/src/WindowSFML.cpp" />
+		<Unit filename="ChessGUI.cpp" />
+		<Unit filename="ChessGUI.h" />
+		<Unit filename="ChessGame.cpp" />
+		<Unit filename="ChessGame.h" />
+		<Unit filename="Error.cpp" />
+		<Unit filename="Error.h" />
+		<Unit filename="mainGUI.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -15,7 +15,7 @@ public:
 	int x, y;
 	bool valid;
 	
-	Square() {x=0; y=0;}
+	Square() {x=0; y=0; valid=false;}
 	Square(int xIn, int yIn);
 	
 	//set a location with a 2 character string like "E4"
@@ -65,6 +65,7 @@ public:
 	bool playMove(Square src, Square dst);
 	
 	Piece getPiece(Square square);
+	PieceColor getColorToMove() {return colorToMove;}
 	
 	std::string historyToStr();
 	

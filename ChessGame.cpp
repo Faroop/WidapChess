@@ -230,7 +230,10 @@ bool Game::playMove(Square s, Square e)
 	{
 		forceMove(s, e);
 		history.insert(history.end(), {s, e, *board(e)});
-		if (colorToMove==WHITE) colorToMove=BLACK; else colorToMove=WHITE;
+		if (colorToMove==WHITE)
+			colorToMove=BLACK;
+		else
+			colorToMove=WHITE;
 		return true;
 	}
 	else
