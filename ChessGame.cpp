@@ -406,9 +406,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+					
+					return true;
 				}
 				else
 				{
@@ -419,9 +419,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+						
+					return true;
 				}
 			}
 			else
@@ -435,9 +435,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+						
+					return true;
 				}
 				else
 				{
@@ -448,9 +448,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+						
+					return true;
 				}
 			}
 		}
@@ -479,9 +479,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+					
+					return true;
 				}
 				else
 				{
@@ -492,9 +492,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+					
+					return true;
 				}
 			}
 			else
@@ -508,9 +508,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+					
+					return true;
 				}
 				else
 				{
@@ -521,9 +521,9 @@ bool Game::checkMovePath(Square s, Square e)
 							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
-						
-						return true;
 					}
+					
+					return true;
 				}
 			}
 		}
@@ -557,7 +557,7 @@ void Game::forceMove(Square s, Square e)
 	//promotion to queen (asking which piece to promote to will come much later in development)
 	if (board(s)->type==PAWN && e.y==(board(s)->color==WHITE?7:0))
 	{
-		board(s)->type=pieceToPromoteTo[board(s)->type];
+		board(s)->type=pieceToPromoteTo[board(s)->color];
 	}
 	
 	//castling
