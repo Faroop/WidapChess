@@ -79,14 +79,14 @@ void ChessGUI::setupPieceShapes()
 	pieceShapes[BISHOP].push_back(V2d(0.34, 0.70));
 	pieceShapes[BISHOP].push_back(V2d(0.40, 0.50));
 	
-	pieceShapes[PAWN].push_back(V2d(0.30, 0.00));
-	pieceShapes[PAWN].push_back(V2d(0.70, 0.00));
-	pieceShapes[PAWN].push_back(V2d(0.60, 0.20));
-	pieceShapes[PAWN].push_back(V2d(0.80, 0.40));
-	pieceShapes[PAWN].push_back(V2d(0.60, 0.60));
-	pieceShapes[PAWN].push_back(V2d(0.40, 0.60));
-	pieceShapes[PAWN].push_back(V2d(0.20, 0.40));
-	pieceShapes[PAWN].push_back(V2d(0.40, 0.20));
+	pieceShapes[PAWN].push_back(V2d(0.30, 0.20));
+	pieceShapes[PAWN].push_back(V2d(0.70, 0.20));
+	pieceShapes[PAWN].push_back(V2d(0.60, 0.40));
+	pieceShapes[PAWN].push_back(V2d(0.80, 0.60));
+	pieceShapes[PAWN].push_back(V2d(0.60, 0.80));
+	pieceShapes[PAWN].push_back(V2d(0.40, 0.80));
+	pieceShapes[PAWN].push_back(V2d(0.20, 0.60));
+	pieceShapes[PAWN].push_back(V2d(0.40, 0.40));
 }
 
 void ChessGUI::run()
@@ -118,39 +118,40 @@ void ChessGUI::processInput()
 {
 	V2d m=window.mouseLoc();
 	
-	window.circle(m, 8, clr(255, 0, 0));
-	
-	if (window.lClick() && m.x>=boardCorner.x && m.x<=boardCorner.x+boardSide && m.y>=boardCorner.y && m.y<=boardCorner.y+boardSide)
+	if (!game.getIfGameOver())
 	{
-		V2i loc=(((m-boardCorner)*8)/boardSide);
-		loc=loc.clamp(V2i(0, 0), V2i(7, 7));
-		Square square=Square(loc.x, loc.y);
-		
-		if (game.getPiece(square).color==game.getColorToMove())
+		if (window.lClick() && m.x>=boardCorner.x && m.x<=boardCorner.x+boardSide && m.y>=boardCorner.y && m.y<=boardCorner.y+boardSide)
 		{
-			if (squareClicked.valid && squareClicked==square)
-				squareClicked.valid=false;
-			else
-				squareClicked=square;
+			V2i loc=(((m-boardCorner)*8)/boardSide);
+			loc=loc.clamp(V2i(0, 0), V2i(7, 7));
+			Square square=Square(loc.x, loc.y);
+			
+			if (game.getPiece(square).color==game.getColorToMove())
+			{
+				if (squareClicked.valid && squareClicked==square)
+					squareClicked.valid=false;
+				else
+					squareClicked=square;
+			}
+			else if (squareClicked.valid)
+			{
+				if (game.playMove(squareClicked, square))
+				{
+					lastStart=squareClicked;
+					lastEnd=square;
+					lastMoveAnim.reset();
+					squareClicked.valid=false;
+				}
+				else
+				{
+					squareClicked.valid=false;
+				}
+			}
 		}
-		else if (squareClicked.valid)
+		else if (window.lClick())
 		{
-			if (game.playMove(squareClicked, square))
-			{
-				lastStart=squareClicked;
-				lastEnd=square;
-				lastMoveAnim.reset();
-				squareClicked.valid=false;
-			}
-			else
-			{
-				squareClicked.valid=false;
-			}
+			squareClicked.valid=false;
 		}
-	}
-	else if (window.lClick())
-	{
-		squareClicked.valid=false;
 	}
 }
 
@@ -202,6 +203,19 @@ void ChessGUI::drawBoard()
 		
 		loc=V2d(boardCorner.x-boardSide/64-boardSide/32, boardCorner.y+((j+0.75)*(boardSide/8)));
 		window.text(string()+(char)(j+'1'), loc, boardSide/16, theme.cordText);
+	}
+	
+	if (game.getIfGameOver())
+	{
+		string msg;
+		
+		if (game.getWinner()==NO_COLOR)
+			msg="the game\nis a\ndraw";
+		else
+			msg+=pieceColor2Name(game.getWinner())+"\nhas won!";
+		
+		window.rect(boardCorner, boardCorner+V2d(boardSide, boardSide), clr(0, 0, 0), 0.5);
+		window.text(msg, V2d(boardCorner.x+boardSide*0.1, boardCorner.y+boardSide-boardSide*0.1), boardSide*0.2, theme.pieceW);
 	}
 }
 

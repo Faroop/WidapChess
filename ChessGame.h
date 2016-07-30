@@ -36,6 +36,7 @@ public:
 enum PieceType {KING=0, QUEEN=1, ROOK=2, KNIGHT=3, BISHOP=4, PAWN=5};
 enum PieceColor {NO_COLOR=-1, WHITE=0, BLACK=1};
 
+PieceColor getOtherColor(PieceColor in);
 std::string pieceType2Name(PieceType type);
 std::string pieceColor2Name(PieceColor color);
 
@@ -45,6 +46,8 @@ public:
 	
 	Piece() {alive=0; color=NO_COLOR; type=QUEEN, square=Square(0, 0);}
 	Piece(PieceColor colorIn, PieceType typeIn, Square squareIn) {alive=1; color=colorIn; type=typeIn, square=squareIn;}
+	
+	std::string str();
 	
 	bool alive;
 	PieceColor color;
@@ -64,6 +67,7 @@ public:
 	
 	Game();
 	
+	bool getIfGameOver();
 	PieceColor getWinner();
 	
 	//send it where you want to move to and from, it will return true if the move is valid
@@ -78,9 +82,6 @@ public:
 	//a client may change them at any time; default is Queen
 	PieceType pieceToPromoteTo[2];
 	
-	//if the report errors when checking moves
-	bool reportErrors=true;
-	
 private:
 	
 	//set up a normal chess board with all the pieces
@@ -93,6 +94,9 @@ private:
 	bool checkCheck(PieceColor kingColor, Square s, Square e);
 	Piece * pieceWillBeInSquare(Square i, PieceColor ignoreColor, PieceType type, Square s, Square e); //only used in checkCheck
 	bool checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square s, Square e); //only used in checkCheck
+	
+	//check for a win state and set the variables
+	void setWinState();
 	
 	//move the source piece to the destination; doesn't do any checks or aditional actions (castling takes two of these)
 	void forceMove(Square src, Square dst);
@@ -107,12 +111,16 @@ private:
 	Piece * boardData[8][8];
 	Piece pieces[32];
 	Piece * kings[2];
+	bool gameOver=false;
+	PieceColor winner=NO_COLOR;
 	
 	//the color to make the next move
 	PieceColor colorToMove;
 	
 	std::list<Move> history;
 	
+	//if the report errors when checking moves
+	bool reportErrors=true;
 	Error err;
 };
 

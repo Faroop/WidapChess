@@ -81,6 +81,21 @@ void Square::clamp()
 	}
 }
 
+string Piece::str()
+{
+	return pieceType2Name(type) + " at " + square.str();
+}
+
+PieceColor getOtherColor(PieceColor in)
+{
+	if (in==WHITE)
+		return BLACK;
+	else if (in==BLACK)
+		return WHITE;
+	else
+		return NO_COLOR;
+}
+
 std::string pieceType2Name(PieceType type)
 {
 	switch (type)
@@ -183,7 +198,12 @@ void Game::setupBoard()
 
 PieceColor Game::getWinner()
 {
-	return NO_COLOR;
+	return winner;
+}
+
+bool Game::getIfGameOver()
+{
+	return gameOver;
 }
 
 Piece Game::getPiece(Square square)
@@ -205,19 +225,19 @@ bool Game::playMove(Square s, Square e)
 	
 	if (s.x==e.x && s.y==e.y)
 	{
-		err << "start and end squares are the same" << err;
+		if (reportErrors) err << "start and end squares are the same" << err;
 		return false;
 	}
 	
 	if (!board(s))
 	{
-		err << "no piece on starting square" << err;
+		if (reportErrors) err << "no piece on starting square" << err;
 		return false;
 	}
 	
 	if (board(s)->color!=colorToMove)
 	{
-		err << "it is " << pieceColor2Name(colorToMove) << "'s move" << err;
+		if (reportErrors) err << "it is " << pieceColor2Name(colorToMove) << "'s move" << err;
 		return false;
 	}
 	
@@ -225,10 +245,11 @@ bool Game::playMove(Square s, Square e)
 	{
 		forceMove(s, e);
 		history.insert(history.end(), {s, e, *board(e)});
-		if (colorToMove==WHITE)
-			colorToMove=BLACK;
-		else
-			colorToMove=WHITE;
+		
+		colorToMove=getOtherColor(colorToMove);
+		
+		setWinState();
+		
 		return true;
 	}
 	else
@@ -244,7 +265,8 @@ bool Game::checkMovePath(Square s, Square e)
 	
 	if (board(e) && board(e)->color==p.color)
 	{
-		err << "you cannot move onto a square already occupied by one of your pieces" << err;
+		if (reportErrors)
+			if (reportErrors) err << "you cannot move onto a square already occupied by one of your pieces" << err;
 		return false;
 	}
 	
@@ -260,13 +282,13 @@ bool Game::checkMovePath(Square s, Square e)
 					return true;
 				else
 				{
-					err << "pawns can only capture digonally" << err;
+					if (reportErrors) err << "pawns can only capture digonally" << err;
 					return false;
 				}
 			}
 			else
 			{
-				err << "pawn can only move one space forward at a time (or two if it's its first move)" << err;
+				if (reportErrors) err << "pawn can only move one space forward at a time (or two if it's its first move)" << err;
 				return false;
 			}
 		}
@@ -296,31 +318,31 @@ bool Game::checkMovePath(Square s, Square e)
 						}
 						else
 						{
-							err << "en passante only works if the other pawn just moved" << err;
+							if (reportErrors) err << "en passante only works if the other pawn just moved" << err;
 							return false;
 						}
 					}
 					else
 					{
-						err << "pawns can move diagonally only when capturing" << err;
+						if (reportErrors) err << "pawns can move diagonally only when capturing" << err;
 						return false;
 					}
 				}
 				else
 				{
-					err << "pawns can move diagonally only when capturing" << err;
+					if (reportErrors) err << "pawns can move diagonally only when capturing" << err;
 					return false;
 				}
 			}
 			else
 			{
-				err << "pawn must always move and capture forward" << err;
+				if (reportErrors) err << "pawn must always move and capture forward" << err;
 				return false;
 			}
 		}
 		else
 		{
-			err << "pawn must move straight or digaonal" << err;
+			if (reportErrors) err << "pawn must move straight or digaonal" << err;
 			return false;
 		}
 	}
@@ -333,7 +355,7 @@ bool Game::checkMovePath(Square s, Square e)
 		}
 		else
 		{
-			err << "knight must move in an 'L' shape" << err;
+			if (reportErrors) err << "knight must move in an 'L' shape" << err;
 			return false;
 		}
 	}
@@ -358,13 +380,13 @@ bool Game::checkMovePath(Square s, Square e)
 					Square sqr=i->s;
 					if (sqr.x==s.x && sqr.y==s.y)
 					{
-						err << "king has moved and therefor you cannot castle" << err;
+						if (reportErrors) err << "king has moved and therefor you cannot castle" << err;
 						return false;
 					}
 					
 					if (sqr.x==rookSqr.x && sqr.y==rookSqr.y)
 					{
-						err << "rook has moved and therefor you cannot castle" << err;
+						if (reportErrors) err << "rook has moved and therefor you cannot castle" << err;
 						return false;
 					}
 				}
@@ -373,12 +395,12 @@ bool Game::checkMovePath(Square s, Square e)
 			}
 			else
 			{
-				err << "rook is not in position to castle" << err;
+				if (reportErrors) err << "rook is not in position to castle" << err;
 			}
 		}
 		else
 		{
-			err << "king can only move one space at a time with the exception of castling" << err;
+			if (reportErrors) err << "king can only move one space at a time with the exception of castling" << err;
 			return false;
 		}
 	}
@@ -398,7 +420,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x, i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -411,7 +433,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x, i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -427,7 +449,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(i, s.y))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -440,7 +462,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(i, s.y))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -451,7 +473,7 @@ bool Game::checkMovePath(Square s, Square e)
 		}
 		else
 		{
-			err << pieceType2Name(p.type) << " can not move straight" << err;
+			if (reportErrors) err << pieceType2Name(p.type) << " can not move straight" << err;
 			return false;
 		}
 	}
@@ -471,7 +493,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x+i, s.y+i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -484,7 +506,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x-i, s.y-i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -500,7 +522,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x+i, s.y-i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -513,7 +535,7 @@ bool Game::checkMovePath(Square s, Square e)
 					{
 						if ((p0=board(Square(s.x-i, s.y+i))))
 						{
-							err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
+							if (reportErrors) err << pieceType2Name(p0->type) << " at " << p0->square.str() << " is in the way" << err;
 							return false;
 						}
 					}
@@ -524,12 +546,12 @@ bool Game::checkMovePath(Square s, Square e)
 		}
 		else
 		{
-			err << pieceType2Name(p.type) << " can not move diagonal" << err;
+			if (reportErrors) err << pieceType2Name(p.type) << " can not move diagonal" << err;
 			return false;
 		}
 	}
 	
-	err << "invalid move, sorry I can't tell you more" << err;
+	if (reportErrors) err << "invalid move, sorry I can't tell you more" << err;
 	return false;
 }
 
@@ -556,7 +578,7 @@ bool Game::checkCheck(PieceColor kingColor, Square s, Square e)
 		if (pieceWillBeInSquare(i=Square(k.x+kingX[j], k.y+kingY[j]), kingColor, KING, s, e))
 		{
 			if (reportErrors)
-				err << "king at " << i.str() << " would put the king in check" << err;
+				if (reportErrors) err << "king at " << i.str() << " would put the king in check" << err;
 			return false;
 		}
 	}
@@ -566,7 +588,7 @@ bool Game::checkCheck(PieceColor kingColor, Square s, Square e)
 		if (pieceWillBeInSquare(i=Square(k.x+knightX[j], k.y+knightY[j]), kingColor, KNIGHT, s, e))
 		{
 			if (reportErrors)
-				err << "knight at " << i.str() << " would put the king in check" << err;
+				if (reportErrors) err << "knight at " << i.str() << " would put the king in check" << err;
 			return false;
 		}
 	}
@@ -576,7 +598,7 @@ bool Game::checkCheck(PieceColor kingColor, Square s, Square e)
 		if (pieceWillBeInSquare(i=Square(k.x+pawnX[j], k.y+(kingColor==WHITE?1:-1)), kingColor, PAWN, s, e))
 		{
 			if (reportErrors)
-				err << "pawn at " << i.str() << " would put the king in check" << err;
+				if (reportErrors) err << "pawn at " << i.str() << " would put the king in check" << err;
 			return false;
 		}
 	}
@@ -642,7 +664,7 @@ bool Game::checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square 
 		if (ptr)
 		{
 			if (reportErrors)
-				err << pieceType2Name(ptr->type) << " at " << i.str() << " would put the king in check" << err;
+				if (reportErrors) err << pieceType2Name(ptr->type) << " at " << i.str() << " would put the king in check" << err;
 			return false;
 		}
 		else
@@ -653,6 +675,47 @@ bool Game::checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square 
 	}
 	
 	return true;
+}
+
+void Game::setWinState()
+{
+	int i;
+	Square j, k;
+	bool moveFound=false;
+	bool reportErrorsWasOn=reportErrors;
+	reportErrors=false;
+	
+	for (i=(colorToMove==WHITE?0:16); i<(colorToMove==WHITE?16:32) && !moveFound; ++i)
+	{
+		if (pieces[i].alive)
+		{
+			k=pieces[i].square;
+			
+			for (j.y=0; j.y<8 && !moveFound; ++j.y)
+			{
+				for (j.x=0; j.x<8 && !moveFound; ++j.x)
+				{
+					if (checkMovePath(k, j) && checkCheck(colorToMove, k, j))
+					{
+						moveFound=true;
+						//err << pieces[i].str() << " to " << j.str() << err;
+					}
+				}
+			}
+		}
+	}
+	
+	if (!moveFound)
+	{
+		gameOver=true;
+		
+		if (checkCheck(colorToMove, Square(), Square()))
+			winner=NO_COLOR;
+		else
+			winner=getOtherColor(colorToMove);
+	}
+	
+	reportErrors=reportErrorsWasOn;
 }
 
 void Game::forceMove(Square s, Square e)
