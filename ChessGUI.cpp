@@ -17,6 +17,7 @@ ChessGUI::ChessGUI()
 	theme.boardClicked=clr(190, 182, 39);
 	theme.pieceW=clr(255, 242, 217);
 	theme.pieceB=clr(22, 29, 42);
+	theme.cordText=theme.boardB;
 }
 
 void ChessGUI::setupPieceShapes()
@@ -100,7 +101,7 @@ void ChessGUI::run()
 		//set vars
 		V2d low=V2d();
 		V2d hgh=window.getDim();
-		boardSide=min(hgh.x-low.x, hgh.y-low.y)*0.9;
+		boardSide=min(hgh.x-low.x, hgh.y-low.y)*0.875;
 		boardCorner=(hgh-low)/2.0-V2d(boardSide/2, boardSide/2);
 		
 		//handle input
@@ -175,12 +176,32 @@ void ChessGUI::drawBoard()
 				color=theme.boardB;
 			
 			window.rect(lowCorner, hghCorner, color);
+		}
+	}
+	
+	for (i.y=0; i.y<8; i.y++)
+	{
+		for (i.x=0; i.x<8; i.x++)
+		{
+			V2d lowCorner=boardCorner+i*(boardSide/8);
+			V2d hghCorner=boardCorner+(i+V2d(1, 1))*(boardSide/8);
 			
 			Piece piece=game.getPiece(Square(i.x, i.y));
 			
 			if (piece.color!=NO_COLOR)
 				drawPiece(lowCorner, hghCorner, piece);
 		}
+	}
+	
+	for (int j=0; j<8; j++)
+	{
+		V2d loc;
+		
+		loc=V2d(boardCorner.x+((j+0.375)*(boardSide/8)), boardCorner.y-boardSide/128);
+		window.text(string()+(char)(j+'A'), loc, boardSide/16, theme.cordText);
+		
+		loc=V2d(boardCorner.x-boardSide/64-boardSide/32, boardCorner.y+((j+0.75)*(boardSide/8)));
+		window.text(string()+(char)(j+'1'), loc, boardSide/16, theme.cordText);
 	}
 }
 

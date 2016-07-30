@@ -17,7 +17,7 @@ public:
 	
 	struct DisplayTheme
 	{
-		widap::Clr boardW, boardB, boardClicked, pieceW, pieceB, bknd;
+		widap::Clr boardW, boardB, boardClicked, pieceW, pieceB, bknd, cordText;
 	};
 	
 	DisplayTheme theme;

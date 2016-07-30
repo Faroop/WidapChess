@@ -78,6 +78,9 @@ public:
 	//a client may change them at any time; default is Queen
 	PieceType pieceToPromoteTo[2];
 	
+	//if the report errors when checking moves
+	bool reportErrors=true;
+	
 private:
 	
 	//set up a normal chess board with all the pieces
@@ -88,7 +91,7 @@ private:
 	
 	//returns true only if the given move will not put or leave the mover in check
 	bool checkCheck(PieceColor kingColor, Square s, Square e);
-	Piece * boardNext(Square i, Square s, Square e); //only used in checkCheck
+	Piece * pieceWillBeInSquare(Square i, PieceColor ignoreColor, PieceType type, Square s, Square e); //only used in checkCheck
 	bool checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square s, Square e); //only used in checkCheck
 	
 	//move the source piece to the destination; doesn't do any checks or aditional actions (castling takes two of these)

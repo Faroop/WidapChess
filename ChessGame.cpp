@@ -536,21 +536,50 @@ bool Game::checkMovePath(Square s, Square e)
 bool Game::checkCheck(PieceColor kingColor, Square s, Square e)
 {
 	Square i, k;
-	Piece * ptr;
+	int j;
+	
+	int pawnX[]={-1, 1};
+	
+	int kingX[]={ 0,  1,  1,  1,  0, -1, -1, -1};
+	int kingY[]={ 1,  1,  0, -1, -1, -1,  0,  1};
+	
+	int knightX[]={-2, -1,  1,  2,  2,  1, -1, -2};
+	int knightY[]={ 1,  2,  2,  1, -1, -2, -2, -1};
 	
 	if (kings[colorToMove]->square==s)
 		k=e;
 	else
 		k=kings[colorToMove]->square;
 	
-	/*if (ptr=boardNext(i=Square(k.x-1, k.y+1), s, e) || ptr=boardNext(i=Square(k.x+1, k.y+1), s, e))
+	for (j=0; j<8; ++j)
 	{
-		if (ptr->color!=kingColor && ptr->type==PAWN)
+		if (pieceWillBeInSquare(i=Square(k.x+kingX[j], k.y+kingY[j]), kingColor, KING, s, e))
 		{
-			err << "pawn at " << i.str() << " would put the king in check" << err;
-			return 0;
+			if (reportErrors)
+				err << "king at " << i.str() << " would put the king in check" << err;
+			return false;
 		}
-	}*/
+	}
+	
+	for (j=0; j<8; ++j)
+	{
+		if (pieceWillBeInSquare(i=Square(k.x+knightX[j], k.y+knightY[j]), kingColor, KNIGHT, s, e))
+		{
+			if (reportErrors)
+				err << "knight at " << i.str() << " would put the king in check" << err;
+			return false;
+		}
+	}
+	
+	for (j=0; j<2; ++j)
+	{
+		if (pieceWillBeInSquare(i=Square(k.x+pawnX[j], k.y+(kingColor==WHITE?1:-1)), kingColor, PAWN, s, e))
+		{
+			if (reportErrors)
+				err << "pawn at " << i.str() << " would put the king in check" << err;
+			return false;
+		}
+	}
 	
 	if (
 		!checkLine(kingColor, k,  1,  0, s, e) ||
@@ -571,16 +600,23 @@ bool Game::checkCheck(PieceColor kingColor, Square s, Square e)
 	return true;
 }
 
-Piece * Game::boardNext(Square i, Square s, Square e)
+Piece * Game::pieceWillBeInSquare(Square i, PieceColor ignoreColor, PieceType type, Square s, Square e)
 {
+	Piece * ptr;
+	
 	if (!i.isInBoard())
-		return 0;
+		ptr=0;
 	else if (i==e)
-		return board(s);
+		ptr=board(s);
 	else if (i==s)
-		return 0;
+		ptr=0;
 	else
-		return board(i);
+		ptr=board(i);
+	
+	if (ptr && ptr->color!=ignoreColor && ptr->type==type)
+		return ptr;
+	else
+		return 0;
 }
 
 bool Game::checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square s, Square e)
@@ -595,36 +631,23 @@ bool Game::checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square 
 		if (!i.isInBoard())
 			break;
 		
-		ptr=boardNext(i, s, e);
+		if (!(ptr=pieceWillBeInSquare(i, friendlyColor, QUEEN, s, e)))
+		{
+			if (vx==0 || vy==0)
+				ptr=pieceWillBeInSquare(i, friendlyColor, ROOK, s, e);
+			else
+				ptr=pieceWillBeInSquare(i, friendlyColor, BISHOP, s, e);
+		}
 		
 		if (ptr)
 		{
-			p=*ptr;
-			
-			if (p.color!=friendlyColor)
-			{
-				if (vx==0 || vy==0)
-				{
-					if (p.type==QUEEN || p.type==ROOK)
-					{
-						err << pieceType2Name(p.type) << " at " << i.str() << " would put the king in check" << err;
-						return false;
-					}
-					else
-						break;
-				}
-				else
-				{
-					if (p.type==QUEEN || p.type==BISHOP)
-					{
-						err << pieceType2Name(p.type) << " at " << i.str() << " would put the king in check" << err;
-						return false;
-					}
-					else
-						break;
-				}
-			}
-			else
+			if (reportErrors)
+				err << pieceType2Name(ptr->type) << " at " << i.str() << " would put the king in check" << err;
+			return false;
+		}
+		else
+		{
+			if (i==e || (!(i==s) && board(i)))
 				break;
 		}
 	}
