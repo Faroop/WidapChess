@@ -24,8 +24,13 @@ public:
 	//get the two character string
 	std::string str();
 	
-	//clamps the square to the board size and prints an error if it was outside
+	//clamps the square to the board size
 	void clamp();
+	
+	//returns if the square location is in the board
+	bool isInBoard() {return x>=0 && x<8 && y>=0 && y<8;}
+	
+	bool operator== (Square in) {return x==in.x && y==in.y;}
 };
 
 enum PieceType {KING=0, QUEEN=1, ROOK=2, KNIGHT=3, BISHOP=4, PAWN=5};
@@ -79,7 +84,12 @@ private:
 	void setupBoard();
 	
 	//return true only if the piece can move to the location and isn't blocked, doesn't check for check or special move
-	bool checkMovePath(Square src, Square dst);
+	bool checkMovePath(Square s, Square e);
+	
+	//returns true only if the given move will not put or leave the mover in check
+	bool checkCheck(PieceColor kingColor, Square s, Square e);
+	Piece * boardNext(Square i, Square s, Square e); //only used in checkCheck
+	bool checkLine(PieceColor friendlyColor, Square i, int vx, int vy, Square s, Square e); //only used in checkCheck
 	
 	//move the source piece to the destination; doesn't do any checks or aditional actions (castling takes two of these)
 	void forceMove(Square src, Square dst);
@@ -93,6 +103,7 @@ private:
 	
 	Piece * boardData[8][8];
 	Piece pieces[32];
+	Piece * kings[2];
 	
 	//the color to make the next move
 	PieceColor colorToMove;

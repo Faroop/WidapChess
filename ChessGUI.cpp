@@ -71,11 +71,11 @@ void ChessGUI::setupPieceShapes()
 	pieceShapes[BISHOP].push_back(V2d(0.30, 0.00));
 	pieceShapes[BISHOP].push_back(V2d(0.70, 0.00));
 	pieceShapes[BISHOP].push_back(V2d(0.60, 0.50));
-	pieceShapes[BISHOP].push_back(V2d(0.90, 0.70));
+	pieceShapes[BISHOP].push_back(V2d(0.70, 0.70));
 	pieceShapes[BISHOP].push_back(V2d(0.50, 1.00));
-	pieceShapes[BISHOP].push_back(V2d(0.20, 0.75));
-	pieceShapes[BISHOP].push_back(V2d(0.50, 0.60));
-	pieceShapes[BISHOP].push_back(V2d(0.20, 0.65));
+	pieceShapes[BISHOP].push_back(V2d(0.30, 0.75));
+	pieceShapes[BISHOP].push_back(V2d(0.50, 0.70));
+	pieceShapes[BISHOP].push_back(V2d(0.34, 0.70));
 	pieceShapes[BISHOP].push_back(V2d(0.40, 0.50));
 	
 	pieceShapes[PAWN].push_back(V2d(0.30, 0.00));
@@ -125,17 +125,16 @@ void ChessGUI::processInput()
 		loc=loc.clamp(V2i(0, 0), V2i(7, 7));
 		Square square=Square(loc.x, loc.y);
 		
-		if (!squareClicked.valid && game.getPiece(square).color==game.getColorToMove())
+		if (game.getPiece(square).color==game.getColorToMove())
 		{
-			squareClicked=square;
+			if (squareClicked.valid && squareClicked==square)
+				squareClicked.valid=false;
+			else
+				squareClicked=square;
 		}
 		else if (squareClicked.valid)
 		{
-			if (game.getPiece(square).color==game.getColorToMove())
-			{
-				squareClicked=square;
-			}
-			else if (game.playMove(squareClicked, square))
+			if (game.playMove(squareClicked, square))
 			{
 				lastStart=squareClicked;
 				lastEnd=square;
