@@ -1,6 +1,7 @@
 #include "ChessGame.h"
+#include "ChessAI.h"
 #include "../WidapLib2/sfml_widap.h"
-#include "../WidapLib2/h/SimpMath.h"
+#include "../WidapLib2/h/Math/SimpMath.h"
 #include <vector>
 
 class ChessGUI
@@ -28,6 +29,8 @@ private:
 	
 	void processInput();
 	
+	void moveAI();
+	
 	void drawBoard();
 	void drawPiece(widap::V2d low, widap::V2d hgh, chess::Piece p);
 	
@@ -50,6 +53,7 @@ private:
 	
 	widap::WindowSFML window;
 	chess::Game game;
+	chess::ChessAI chessAIs[2];
 	
 	
 	/// info on drawing the board

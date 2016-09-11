@@ -2,8 +2,14 @@
 #pragma once
 
 #include <string>
-#include <list>
+#include <vector>
 #include "Error.h"
+
+/// problems with this class:
+
+//does not have a problem with castling through or out of check
+//does not have repeat three position tie handling
+//does not have 50 move tie handling
 
 namespace chess
 {
@@ -55,10 +61,12 @@ public:
 	Square square;
 };
 
-struct Move
+struct HistoryMove
 {
-	Square s, e; 
+	Square s, e;
 	Piece p;
+	Piece * killed;
+	
 };
 
 class Game
@@ -66,12 +74,16 @@ class Game
 public:
 	
 	Game();
+	~Game() {}
 	
 	bool getIfGameOver();
 	PieceColor getWinner();
 	
 	//send it where you want to move to and from, it will return true if the move is valid
 	bool playMove(Square src, Square dst);
+	
+	//undo one move
+	void undo();
 	
 	Piece getPiece(Square square);
 	PieceColor getColorToMove() {return colorToMove;}
@@ -102,7 +114,7 @@ private:
 	void forceMove(Square src, Square dst);
 	
 	Piece * board(Square loc) {return boardData[loc.x][loc.y];}
-	void board(Square loc, Piece * ptr) {boardData[loc.x][loc.y]=ptr;}
+	inline void board(Square loc, Piece * ptr) {boardData[loc.x][loc.y]=ptr;}
 	
 private:
 	
@@ -117,7 +129,7 @@ private:
 	//the color to make the next move
 	PieceColor colorToMove;
 	
-	std::list<Move> history;
+	std::vector<HistoryMove> history;
 	
 	//if the report errors when checking moves
 	bool reportErrors=true;

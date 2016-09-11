@@ -162,6 +162,8 @@ void Game::setupBoard()
 {
 	int i=0;
 	
+	history.clear();
+	
 	for (int color=0; color<2; ++color)
 	{
 		int y=color*7;
@@ -244,7 +246,6 @@ bool Game::playMove(Square s, Square e)
 	if (checkMovePath(s, e) && checkCheck(colorToMove, s, e))
 	{
 		forceMove(s, e);
-		history.insert(history.end(), {s, e, *board(e)});
 		
 		colorToMove=getOtherColor(colorToMove);
 		
@@ -373,11 +374,10 @@ bool Game::checkMovePath(Square s, Square e)
 			
 			if (board(rookSqr) && board(rookSqr)->type==ROOK && board(rookSqr)->color==p.color)
 			{
-				std::list<Move>::const_iterator i;
-				
-				for (i=history.begin(); i!=history.end(); ++i)
+				for (int i=0; i<(int)history.size(); ++i)
 				{
-					Square sqr=i->s;
+					Square sqr=history[i].s;
+					
 					if (sqr.x==s.x && sqr.y==s.y)
 					{
 						if (reportErrors) err << "king has moved and therefor you cannot castle" << err;
@@ -720,6 +720,12 @@ void Game::setWinState()
 
 void Game::forceMove(Square s, Square e)
 {
+	HistoryMove mv;
+	mv.s=s;
+	mv.e=e;
+	mv.p=*board(s);
+	mv.killed=board(e);
+	
 	if (board(e))
 		board(e)->alive=0;
 	
@@ -727,14 +733,17 @@ void Game::forceMove(Square s, Square e)
 	if (board(s)->type==PAWN && s.x!=e.x && !board(e) && e.y==(board(s)->color==WHITE?5:2))
 	{
 		Square captSq=Square(e.x, (board(s)->color==WHITE?4:3));
+		
 		if (board(captSq) && board(captSq)->type==PAWN && board(captSq)->color!=board(s)->color)
-		{
+		{	//pawn promotion
+
+			mv.killed=board(captSq);
 			board(captSq)->alive=0;
 			board(captSq, 0);
 		}
 	}
 	
-	//promotion to queen (asking which piece to promote to will come much later in development)
+	//pawn promotion
 	if (board(s)->type==PAWN && e.y==(board(s)->color==WHITE?7:0))
 	{
 		board(s)->type=pieceToPromoteTo[board(s)->color];
@@ -747,23 +756,63 @@ void Game::forceMove(Square s, Square e)
 		
 		if (p && p->type==ROOK)
 		{
-			forceMove(p->square, Square(s.x+(s.x<e.x?1:-1), s.y));
+			Square rookS, rookE;
+			
+			rookS=p->square;
+			rookE=Square(s.x+(s.x<e.x?1:-1), s.y);
+			
+			board(rookE, board(rookS));
+			board(rookS, 0);
+			p->square=rookE;
 		}
 	}
 	
 	board(e, board(s));
 	board(s, 0);
 	board(e)->square=e;
+	
+	history.push_back(mv);
+}
+
+void Game::undo()
+{
+	HistoryMove mv=history.back();
+	
+	Piece * p=board(mv.e);
+	
+	//move the main piece back
+	board(mv.s, p);
+	p->square=mv.s;
+	
+	//restore a captured piece
+	board(mv.e, mv.killed);
+	if (mv.killed)
+		mv.p.alive=true;
+	
+	//restore type in case of pawn promotion
+	p->type=mv.p.type;
+	
+	//castling
+	if (mv.p.type==KING && abs(mv.s.x-mv.e.x)==2)
+	{
+		Square rookS, rookE;
+		
+		rookS=Square(mv.s.x<mv.e.x?7:0, mv.s.y);
+		rookE=Square(mv.s.x+(mv.s.x<mv.e.x?1:-1), mv.s.y);
+		
+		board(rookS, board(rookE));
+		board(rookE, 0);
+		p->square=rookS;
+	}
 }
 
 string Game::historyToStr()
 {
 	string out;
-	std::list<Move>::const_iterator iterator;
 	
-	for (iterator=history.begin(); iterator!=history.end(); ++iterator)
+	for (int i=0; i<(int)history.size(); ++i)
 	{
-		Move mv=*iterator;
+		HistoryMove mv=history[i];
 		out+=pieceColor2Name(mv.p.color);
 		out+=" ";
 		out+=pieceType2Name(mv.p.type);

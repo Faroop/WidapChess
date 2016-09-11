@@ -1,7 +1,7 @@
 
 #include "ChessGUI.h"
-#include "../WidapLib2/h/SimpMath.h"
-#include "../WidapLib2/h/ComplexMath.h"
+#include "../WidapLib2/h/Math/SimpMath.h"
+#include "../WidapLib2/h/Math/ComplexMath.h"
 #include <iostream>
 
 using namespace widap;
@@ -18,6 +18,9 @@ ChessGUI::ChessGUI()
 	theme.pieceW=clr(255, 242, 217);
 	theme.pieceB=clr(22, 29, 42);
 	theme.cordText=theme.boardB;
+	
+	//chessAIs[0].setup(&game, WHITE);
+	//chessAIs[1].setup(&game, BLACK);
 }
 
 void ChessGUI::setupPieceShapes()
@@ -107,6 +110,9 @@ void ChessGUI::run()
 		//handle input
 		processInput();
 		
+		//if relevent, move the AI
+		moveAI();
+		
 		//draw
 		window.clear(theme.bknd);
 		drawBoard();
@@ -118,9 +124,15 @@ void ChessGUI::processInput()
 {
 	V2d m=window.mouseLoc();
 	
-	if (!game.getIfGameOver())
+	if (window.lClick())
 	{
-		if (window.lClick() && m.x>=boardCorner.x && m.x<=boardCorner.x+boardSide && m.y>=boardCorner.y && m.y<=boardCorner.y+boardSide)
+		if (m.x>=boardCorner.x &&
+			m.x<=boardCorner.x+boardSide &&
+			m.y>=boardCorner.y &&
+			m.y<=boardCorner.y+boardSide &&
+			!game.getIfGameOver() &&
+			!chessAIs[game.getColorToMove()].getIfSetUp()
+			)
 		{
 			V2i loc=(((m-boardCorner)*8)/boardSide);
 			loc=loc.clamp(V2i(0, 0), V2i(7, 7));
@@ -148,11 +160,20 @@ void ChessGUI::processInput()
 				}
 			}
 		}
-		else if (window.lClick())
+		else
 		{
 			squareClicked.valid=false;
 		}
 	}
+}
+
+void ChessGUI::moveAI()
+{
+	if (chessAIs[game.getColorToMove()].getIfSetUp())
+		if (!chessAIs[game.getColorToMove()].nextMove())
+			widap::err << "AI fucked up" << widap::err;
+	
+		
 }
 
 void ChessGUI::drawBoard()
