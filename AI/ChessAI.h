@@ -1,10 +1,10 @@
 
 #pragma once
 
-#include "ChessGame.h"
+#include "../ChessGame.h"
 #include <string>
 #include <list>
-#include "Error.h"
+#include "../Error.h"
 
 namespace chess
 {
@@ -33,7 +33,7 @@ private:
 	PieceColor color;
 	Game * game;
 	
-	Error err;
+	::Error err;
 };
 
 }

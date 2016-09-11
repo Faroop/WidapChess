@@ -1,29 +1,15 @@
 
-#include "ChessGUI.h"
-#include "../WidapLib2/h/Math/SimpMath.h"
-#include "../WidapLib2/h/Math/ComplexMath.h"
-#include <iostream>
+#include "BoardViewUI.h"
+#include "../../WidapLib2/h/Math/SimpMath.h"
+#include "ChessDisplayTheme.h"
 
-using namespace widap;
-using namespace chess;
-
-ChessGUI::ChessGUI()
+BoardViewUI::BoardViewUI(Game * gameIn)
 {
-	lastMoveAnim=Animation(40);
-	
-	theme.bknd=clr(82, 32, 14);
-	theme.boardW=clr(209, 175, 125);
-	theme.boardB=clr(124, 81, 47);
-	theme.boardClicked=clr(190, 182, 39);
-	theme.pieceW=clr(255, 242, 217);
-	theme.pieceB=clr(22, 29, 42);
-	theme.cordText=theme.boardB;
-	
-	//chessAIs[0].setup(&game, WHITE);
-	//chessAIs[1].setup(&game, BLACK);
+	game=gameIn;
+	setupPieceShapes();
 }
 
-void ChessGUI::setupPieceShapes()
+void BoardViewUI::setupPieceShapes()
 {
 	pieceShapes[KING].push_back(V2d(0.40, 0.00));
 	pieceShapes[KING].push_back(V2d(0.60, 0.00));
@@ -92,94 +78,52 @@ void ChessGUI::setupPieceShapes()
 	pieceShapes[PAWN].push_back(V2d(0.40, 0.40));
 }
 
-void ChessGUI::run()
+void BoardViewUI::update()
 {
-	window.open(V2u(1080, 1080), "Widap Chess GUI");
-	setupPieceShapes();
+	V2d m=input->mouseLoc();
 	
-	do
+	if (watchForInput)
 	{
-		lastMoveAnim.advance();
-		
-		//set vars
-		V2d low=V2d();
-		V2d hgh=window.getDim();
-		boardSide=min(hgh.x-low.x, hgh.y-low.y)*0.875;
-		boardCorner=(hgh-low)/2.0-V2d(boardSide/2, boardSide/2);
-		
-		//handle input
-		processInput();
-		
-		//if relevent, move the AI
-		moveAI();
-		
-		//draw
-		window.clear(theme.bknd);
-		drawBoard();
-	}
-	while (window.nextFrame());
-}
-
-void ChessGUI::processInput()
-{
-	V2d m=window.mouseLoc();
-	
-	if (window.lClick())
-	{
-		if (m.x>=boardCorner.x &&
-			m.x<=boardCorner.x+boardSide &&
-			m.y>=boardCorner.y &&
-			m.y<=boardCorner.y+boardSide &&
-			!game.getIfGameOver() &&
-			!chessAIs[game.getColorToMove()].getIfSetUp()
-			)
+		if (input->lClick())
 		{
-			V2i loc=(((m-boardCorner)*8)/boardSide);
-			loc=loc.clamp(V2i(0, 0), V2i(7, 7));
-			Square square=Square(loc.x, loc.y);
-			
-			if (game.getPiece(square).color==game.getColorToMove())
+			if (m.isInRect(boardCorner, boardCorner+V2d(boardSide, boardSide)))
 			{
-				if (squareClicked.valid && squareClicked==square)
-					squareClicked.valid=false;
-				else
-					squareClicked=square;
-			}
-			else if (squareClicked.valid)
-			{
-				if (game.playMove(squareClicked, square))
+				V2i loc=(((m-boardCorner)*8)/boardSide);
+				loc=loc.clamp(V2i(0, 0), V2i(7, 7));
+				Square square=Square(loc.x, loc.y);
+				
+				if (game->getPiece(square).color==game->getColorToMove())
 				{
-					lastStart=squareClicked;
-					lastEnd=square;
-					lastMoveAnim.reset();
-					squareClicked.valid=false;
+					if (squareClicked.valid && squareClicked==square)
+						squareClicked.valid=false;
+					else
+						squareClicked=square;
 				}
-				else
+				else if (squareClicked.valid)
 				{
+					game->playMove(squareClicked, square);
+					
 					squareClicked.valid=false;
 				}
 			}
+			else
+			{
+				squareClicked.valid=false;
+			}
 		}
-		else
-		{
-			squareClicked.valid=false;
-		}
+	}
+	else
+	{
+		squareClicked.valid=false;
 	}
 }
 
-void ChessGUI::moveAI()
-{
-	if (chessAIs[game.getColorToMove()].getIfSetUp())
-		if (!chessAIs[game.getColorToMove()].nextMove())
-			widap::err << "AI fucked up" << widap::err;
-	
-		
-}
-
-void ChessGUI::drawBoard()
+void BoardViewUI::drawBknd()
 {
 	V2i i;
 	Clr color;
+	
+	surface->rect(getLow(), getHgh(), theme.bknd);
 	
 	for (i.y=0; i.y<8; i.y++)
 	{
@@ -197,9 +141,15 @@ void ChessGUI::drawBoard()
 			else
 				color=theme.boardB;
 			
-			window.rect(lowCorner, hghCorner, color);
+			surface->rect(lowCorner, hghCorner, color);
 		}
 	}
+}
+
+void BoardViewUI::draw()
+{
+	V2i i;
+	Clr color;
 	
 	for (i.y=0; i.y<8; i.y++)
 	{
@@ -208,7 +158,7 @@ void ChessGUI::drawBoard()
 			V2d lowCorner=boardCorner+i*(boardSide/8);
 			V2d hghCorner=boardCorner+(i+V2d(1, 1))*(boardSide/8);
 			
-			Piece piece=game.getPiece(Square(i.x, i.y));
+			Piece piece=game->getPiece(Square(i.x, i.y));
 			
 			if (piece.color!=NO_COLOR)
 				drawPiece(lowCorner, hghCorner, piece);
@@ -220,27 +170,27 @@ void ChessGUI::drawBoard()
 		V2d loc;
 		
 		loc=V2d(boardCorner.x+((j+0.375)*(boardSide/8)), boardCorner.y-boardSide/128);
-		window.text(string()+(char)(j+'A'), loc, boardSide/16, theme.cordText);
+		surface->text()->draw(string()+(char)(j+'A'), loc, boardSide/16, theme.cordText);
 		
 		loc=V2d(boardCorner.x-boardSide/64-boardSide/32, boardCorner.y+((j+0.75)*(boardSide/8)));
-		window.text(string()+(char)(j+'1'), loc, boardSide/16, theme.cordText);
+		surface->text()->draw(string()+(char)(j+'1'), loc, boardSide/16, theme.cordText);
 	}
 	
-	if (game.getIfGameOver())
+	if (game->getIfGameOver())
 	{
 		string msg;
 		
-		if (game.getWinner()==NO_COLOR)
+		if (game->getWinner()==NO_COLOR)
 			msg="the game\nis a\ndraw";
 		else
-			msg+=pieceColor2Name(game.getWinner())+"\nhas won!";
+			msg+=pieceColor2Name(game->getWinner())+"\nhas won!";
 		
-		window.rect(boardCorner, boardCorner+V2d(boardSide, boardSide), clr(0, 0, 0), 0.5);
-		window.text(msg, V2d(boardCorner.x+boardSide*0.1, boardCorner.y+boardSide-boardSide*0.1), boardSide*0.2, theme.pieceW);
+		surface->rect(boardCorner, boardCorner+V2d(boardSide, boardSide), clr(0, 0, 0), 0.5);
+		surface->text()->draw(msg, V2d(boardCorner.x+boardSide*0.1, boardCorner.y+boardSide-boardSide*0.1), boardSide*0.2, theme.pieceW);
 	}
 }
 
-void ChessGUI::drawPiece(V2d lowIn, V2d hghIn, Piece p)
+void BoardViewUI::drawPiece(V2d lowIn, V2d hghIn, Piece p)
 {
 	Clr c=(p.color==WHITE?theme.pieceW:theme.pieceB);
 	int vertNum=pieceShapes[p.type].size();
@@ -251,10 +201,18 @@ void ChessGUI::drawPiece(V2d lowIn, V2d hghIn, Piece p)
 	for (int i=0; i<vertNum; ++i)
 		shape[i]=lerp(pieceShapes[p.type][i], zero, one, low, hgh);
 	
-	window.poly(shape, vertNum, c);
+	surface->poly(shape, vertNum, c);
 	
 	if (shape)
 		delete[] shape;
+}
+
+void BoardViewUI::rectChanged()
+{
+	V2d hgh=getHgh(), low=getLow();
+	
+	boardSide=min(hgh.x-low.x, hgh.y-low.y)*0.875;
+	boardCorner=(hgh+low)/2.0-V2d(boardSide/2, boardSide/2);
 }
 
 

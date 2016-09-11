@@ -776,7 +776,14 @@ void Game::forceMove(Square s, Square e)
 
 void Game::undo()
 {
-	HistoryMove mv=history.back();
+	if (history.empty())
+		return;
+	
+	auto i=history.end();
+	
+	i--;
+	
+	HistoryMove mv=*i;
 	
 	Piece * p=board(mv.e);
 	
@@ -784,10 +791,14 @@ void Game::undo()
 	board(mv.s, p);
 	p->square=mv.s;
 	
+	board(mv.e, nullptr);
+	
 	//restore a captured piece
-	board(mv.e, mv.killed);
 	if (mv.killed)
+	{
+		board(mv.killed->square, mv.killed);
 		mv.p.alive=true;
+	}
 	
 	//restore type in case of pawn promotion
 	p->type=mv.p.type;
@@ -804,6 +815,9 @@ void Game::undo()
 		board(rookE, 0);
 		p->square=rookS;
 	}
+	
+	colorToMove=getOtherColor(colorToMove);
+	history.erase(i);
 }
 
 string Game::historyToStr()
