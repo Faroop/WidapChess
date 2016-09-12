@@ -153,8 +153,16 @@ namespace chess
 Game::Game()
 {
 	err.setPrefix("Chess game: ");
+	reset();
+}
+
+void Game::reset()
+{
 	pieceToPromoteTo[0]=pieceToPromoteTo[1]=QUEEN;
 	colorToMove=WHITE;
+	gameOver=false;
+	winner=NO_COLOR;
+	history.clear();
 	setupBoard();
 }
 
@@ -374,9 +382,9 @@ bool Game::checkMovePath(Square s, Square e)
 			
 			if (board(rookSqr) && board(rookSqr)->type==ROOK && board(rookSqr)->color==p.color)
 			{
-				for (int i=0; i<(int)history.size(); ++i)
+				for (auto i=history.begin(); i!=history.end(); i++)
 				{
-					Square sqr=history[i].s;
+					Square sqr=(*i).s;
 					
 					if (sqr.x==s.x && sqr.y==s.y)
 					{
@@ -774,6 +782,45 @@ void Game::forceMove(Square s, Square e)
 	history.push_back(mv);
 }
 
+void Game::copyInData(Game * game)
+{
+	gameOver=game->gameOver;
+	winner=game->winner;
+	colorToMove=game->colorToMove;
+	
+	pieceToPromoteTo[WHITE]=game->pieceToPromoteTo[WHITE];
+	pieceToPromoteTo[BLACK]=game->pieceToPromoteTo[BLACK];
+	
+	unsigned long offset=pieces-game->pieces;
+	
+	kings[WHITE]=game->kings[WHITE]+offset;
+	kings[BLACK]=game->kings[BLACK]+offset;
+	
+	for (int i=0; i<32; ++i)
+	{
+		pieces[i]=game->pieces[i];
+	}
+	
+	for (int x=0; x<8; ++x)
+	{
+		for (int y=0; y<8; ++y)
+		{
+			if (game->boardData[x][y])
+				boardData[x][y]=game->boardData[x][y]+offset;
+			else
+				boardData[x][y]=0;
+		}
+	}
+	
+	history.clear();
+	for (auto i=game->history.begin(); i!=game->history.end(); ++i)
+	{
+		HistoryMove mv=*i;
+		mv.killed=(*i).killed+offset;
+		history.push_back(mv);
+	}
+}
+
 void Game::undo()
 {
 	if (history.empty())
@@ -824,9 +871,9 @@ string Game::historyToStr()
 {
 	string out;
 	
-	for (int i=0; i<(int)history.size(); ++i)
+	for (auto i=history.begin(); i!=history.end(); i++)
 	{
-		HistoryMove mv=history[i];
+		HistoryMove mv=*i;
 		out+=pieceColor2Name(mv.p.color);
 		out+=" ";
 		out+=pieceType2Name(mv.p.type);

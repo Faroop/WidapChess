@@ -1,88 +1,210 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="Release" />
-	<File name="ChessDisplayTheme.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<ActiveTarget name="Debug" />
+	<File name="../WidapLib2/h/UI/LabelViewUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="331" topLine="0" />
+			<Cursor1 position="153" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="ChessDisplayTheme.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="GUI/ChessGUI.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="232" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="ChessGame.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="253" topLine="0" />
+			<Cursor1 position="2601" topLine="62" />
 		</Cursor>
 		<Folding>
-			<Collapse line="14" />
+			<Collapse line="19" />
+			<Collapse line="56" />
 		</Folding>
 	</File>
-	<File name="BoardViewUI.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="GUI/ChessGUI.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="309" topLine="0" />
+			<Cursor1 position="152" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="ChessGame.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../WidapLib2/h/Window/InputSource.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="14759" topLine="0" />
+			<Cursor1 position="3180" topLine="85" />
+		</Cursor>
+	</File>
+	<File name="ChessGame.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2842" topLine="52" />
 		</Cursor>
 		<Folding>
-			<Collapse line="150" />
-			<Collapse line="153" />
-			<Collapse line="161" />
-			<Collapse line="558" />
-			<Collapse line="625" />
-			<Collapse line="644" />
-			<Collapse line="680" />
+			<Collapse line="11" />
+			<Collapse line="18" />
+			<Collapse line="49" />
+			<Collapse line="59" />
+			<Collapse line="84" />
+			<Collapse line="89" />
+			<Collapse line="99" />
+			<Collapse line="131" />
+			<Collapse line="159" />
+			<Collapse line="169" />
+			<Collapse line="209" />
+			<Collapse line="214" />
+			<Collapse line="219" />
+			<Collapse line="270" />
+			<Collapse line="566" />
+			<Collapse line="633" />
+			<Collapse line="652" />
+			<Collapse line="688" />
+			<Collapse line="729" />
+			<Collapse line="785" />
+			<Collapse line="824" />
+			<Collapse line="870" />
 		</Folding>
 	</File>
-	<File name="ChessGUI.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Error.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="230" topLine="0" />
+			<Cursor1 position="1802" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="ChessAI.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../WidapLib2/h/UI/ThemeUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="142" topLine="0" />
+			<Cursor1 position="455" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/UI/ButtonViewUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="369" topLine="11" />
+		</Cursor>
+	</File>
+	<File name="ChessGame.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2975" topLine="100" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/h/UI/StackViewUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="153" topLine="6" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/UI/LabelViewUI.cpp" open="1" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/h/Math/Vector2D.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2182" topLine="93" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/UI/ViewUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="385" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/UI/StackViewUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="332" topLine="10" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/h/Mscl/Error.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1832" topLine="19" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/h/UI/ButtonViewUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="198" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/UI/ContainerViewUI.cpp" open="1" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="39" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/h/UI/ViewUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1452" topLine="42" />
+		</Cursor>
+	</File>
+	<File name="GUI/BoardViewUI.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="797" topLine="0" />
 		</Cursor>
 		<Folding>
-			<Collapse line="9" />
+			<Collapse line="6" />
+			<Collapse line="11" />
+			<Collapse line="51" />
+			<Collapse line="79" />
+			<Collapse line="123" />
 		</Folding>
 	</File>
-	<File name="ChessAI.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="GUI/PieceDrawer.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="502" topLine="0" />
+			<Cursor1 position="228" topLine="0" />
 		</Cursor>
-		<Folding>
-			<Collapse line="4" />
-		</Folding>
 	</File>
-	<File name="BoardViewUI.cpp" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../WidapLib2/src/UI/ThemeUI.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="173" topLine="0" />
+			<Cursor1 position="362" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="GUI/ChessDisplayTheme.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="237" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/Window/InputSource.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="686" topLine="41" />
 		</Cursor>
 	</File>
 	<File name="../WidapLib2/h/Graphics/Color.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="536" topLine="12" />
+			<Cursor1 position="899" topLine="28" />
 		</Cursor>
 	</File>
-	<File name="Error.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="GUI/PieceDrawer.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1908" topLine="28" />
+			<Cursor1 position="97" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="8" />
+		</Folding>
+	</File>
+	<File name="../WidapLib2/h/UI/ContainerViewUI.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="689" topLine="24" />
 		</Cursor>
 	</File>
-	<File name="ChessGUI.h" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="AI/ChessAI.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="424" topLine="21" />
+			<Cursor1 position="142" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="mainGUI.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="GUI/BoardViewUI.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="103" topLine="0" />
+			<Cursor1 position="342" topLine="0" />
 		</Cursor>
+	</File>
+	<File name="AI/ChessAI.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="40" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="../WidapLib2/src/Window/WindowSFML.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5789" topLine="239" />
+		</Cursor>
+		<Folding>
+			<Collapse line="292" />
+			<Collapse line="307" />
+			<Collapse line="314" />
+			<Collapse line="321" />
+			<Collapse line="328" />
+			<Collapse line="335" />
+			<Collapse line="342" />
+			<Collapse line="351" />
+			<Collapse line="360" />
+			<Collapse line="370" />
+			<Collapse line="381" />
+			<Collapse line="395" />
+			<Collapse line="413" />
+			<Collapse line="430" />
+			<Collapse line="508" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>

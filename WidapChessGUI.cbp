@@ -91,19 +91,21 @@
 		<Unit filename="../WidapLib2/src/Window/InputSource.cpp" />
 		<Unit filename="../WidapLib2/src/Window/WindowBase.cpp" />
 		<Unit filename="../WidapLib2/src/Window/WindowSFML.cpp" />
-		<Unit filename="BoardViewUI.cpp" />
-		<Unit filename="BoardViewUI.h" />
-		<Unit filename="ChessAI.cpp" />
-		<Unit filename="ChessAI.h" />
-		<Unit filename="ChessDisplayTheme.cpp" />
-		<Unit filename="ChessDisplayTheme.h" />
-		<Unit filename="ChessGUI.cpp" />
-		<Unit filename="ChessGUI.h" />
+		<Unit filename="AI/ChessAI.cpp" />
+		<Unit filename="AI/ChessAI.h" />
 		<Unit filename="ChessGame.cpp" />
 		<Unit filename="ChessGame.h" />
 		<Unit filename="Error.cpp" />
 		<Unit filename="Error.h" />
-		<Unit filename="mainGUI.cpp" />
+		<Unit filename="GUI/BoardViewUI.cpp" />
+		<Unit filename="GUI/BoardViewUI.h" />
+		<Unit filename="GUI/ChessDisplayTheme.cpp" />
+		<Unit filename="GUI/ChessDisplayTheme.h" />
+		<Unit filename="GUI/ChessGUI.cpp" />
+		<Unit filename="GUI/ChessGUI.h" />
+		<Unit filename="GUI/PieceDrawer.cpp" />
+		<Unit filename="GUI/PieceDrawer.h" />
+		<Unit filename="GUI/mainGUI.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

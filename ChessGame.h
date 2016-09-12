@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <list>
 #include "Error.h"
 
 /// problems with this class:
@@ -76,6 +76,8 @@ public:
 	Game();
 	~Game() {}
 	
+	void reset();
+	
 	bool getIfGameOver();
 	PieceColor getWinner();
 	
@@ -94,7 +96,7 @@ public:
 	//a client may change them at any time; default is Queen
 	PieceType pieceToPromoteTo[2];
 	
-private:
+protected:
 	
 	//set up a normal chess board with all the pieces
 	void setupBoard();
@@ -113,23 +115,23 @@ private:
 	//move the source piece to the destination; doesn't do any checks or aditional actions (castling takes two of these)
 	void forceMove(Square src, Square dst);
 	
+	void copyInData(Game * game);
+	
 	Piece * board(Square loc) {return boardData[loc.x][loc.y];}
 	inline void board(Square loc, Piece * ptr) {boardData[loc.x][loc.y]=ptr;}
 	
-private:
-	
-	static const bool showDebug=1;
+protected:
 	
 	Piece * boardData[8][8];
 	Piece pieces[32];
 	Piece * kings[2];
-	bool gameOver=false;
-	PieceColor winner=NO_COLOR;
+	bool gameOver;
+	PieceColor winner;
 	
 	//the color to make the next move
 	PieceColor colorToMove;
 	
-	std::vector<HistoryMove> history;
+	std::list<HistoryMove> history;
 	
 	//if the report errors when checking moves
 	bool reportErrors=true;

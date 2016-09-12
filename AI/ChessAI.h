@@ -9,7 +9,7 @@
 namespace chess
 {
 
-class ChessAI: Game
+class ChessAI: protected Game
 {
 public:
 	
@@ -32,6 +32,8 @@ private:
 	bool isSetUp=false;
 	PieceColor color;
 	Game * game;
+	
+	int iterNum=2;
 	
 	::Error err;
 };

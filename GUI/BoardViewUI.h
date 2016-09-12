@@ -2,6 +2,7 @@
 
 #include "../../WidapLib2/h/UI/ViewUI.h"
 #include "../ChessGame.h"
+#include "PieceDrawer.h"
 
 using namespace widap;
 using namespace chess;
@@ -23,11 +24,10 @@ public:
 	
 	void setWatchForInput(bool in) {watchForInput=in;}
 	
+protected:
+	void ioChanged() {pieceDrawer.setSurface(surface);}
+	
 private:
-	
-	void setupPieceShapes();
-	
-	void drawPiece(V2d lowIn, V2d hghIn, Piece p);
 	
 	widap::V2d boardCorner;
 	double boardSide;
@@ -38,5 +38,5 @@ private:
 	
 	Game * game;
 	
-	std::vector<widap::V2d> pieceShapes[6];
+	PieceDrawer pieceDrawer;
 };

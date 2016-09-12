@@ -7,6 +7,7 @@
 #include "../../WidapLib2/h/UI/NavViewUI.h"
 #include "../../WidapLib2/h/UI/StackViewUI.h"
 #include "../../WidapLib2/h/UI/ButtonViewUI.h"
+#include "../../WidapLib2/h/UI/LabelViewUI.h"
 
 #include "../AI/ChessAI.h"
 
@@ -15,12 +16,41 @@
 using namespace widap;
 using namespace chess;
 
+class NewGamePrompt: public StackViewUI
+{
+public:
+	NewGamePrompt(Game * gameIn, NavViewUI * navIn)
+	{
+		setLoyout(StackViewUI::CENTER, StackViewUI::CENTER);
+		
+		yes.setClickAction([=](){gameIn->reset(); navIn->popView();});
+		no.setClickAction(navIn->popViewLambda());
+		
+		buttonContainer.setLoyout(TRAILING, TRAILING, true);
+		buttonContainer.addChild(&yes);
+		buttonContainer.addChild(&no);
+		
+		title.setStyle(2);
+		
+		addChild(&title);
+		addChild(&buttonContainer);
+		
+	}
+	
+	LabelViewUI title={"Are you sure you want to start a new game?"};
+	StackViewUI buttonContainer;
+	ButtonViewUI yes={"Yes"}, no={"No"};
+};
+
 ChessGUI::ChessGUI()
 {
 	window=new WindowSFML();
 	
-	//chessAIs[0].setup(&game, WHITE);
-	//chessAIs[1].setup(&game, BLACK);
+	whiteAI=new ChessAI();
+	blackAI=new ChessAI();
+	
+	whiteAI->setup(&game, WHITE);
+	blackAI->setup(&game, BLACK);
 }
 
 ChessGUI::~ChessGUI()
@@ -45,15 +75,34 @@ void ChessGUI::run()
 	
 	StackViewUI toolbar;
 	toolbar.setLoyout(StackViewUI::LEADING, StackViewUI::LEADING, true, false);
-	ButtonViewUI undoBtn("Undo");
-	undoBtn.setClickAction([this](){game.undo();});
-	toolbar.addChild(&undoBtn);
+	toolbar.theme.outerBuffer=V2d(8, 0); toolbar.contentsChanged();
+	
+	NewGamePrompt newGamePrompt(&game, &nav);
 	ButtonViewUI newGameBtn("New Game");
-	//newGameBtn.setClickAction([this](){game=Game();});
+	newGameBtn.setClickAction(nav.pushViewLambda(&newGamePrompt));
 	toolbar.addChild(&newGameBtn);
 	
+	ButtonViewUI undoBtn("Undo");
+	toolbar.addChild(&undoBtn);
+	undoBtn.setClickAction([this](){game.undo();});
+	
+	ButtonViewUI aiPlayBtn("Play AI");
+	toolbar.addChild(&aiPlayBtn);
+	aiPlayBtn.setClickAction([this]()
+		{
+			if (!game.getIfGameOver())
+			{
+				if (game.getColorToMove()==WHITE)
+					whiteAI->nextMove();
+				else
+					blackAI->nextMove();
+			}
+		}
+	);
+	
 	StackViewUI boardParent;
-	boardParent.setLoyout(StackViewUI::LEADING, StackViewUI::LEADING, false, false);
+	boardParent.setLoyout(StackViewUI::LEADING, StackViewUI::FILL, false, false);
+	boardParent.theme.outerBuffer.zero(); boardParent.theme.innerBuffer=0; boardParent.contentsChanged();
 	boardParent.addChild(&toolbar);
 	boardParent.addChild(&boardView);
 	
@@ -65,11 +114,19 @@ void ChessGUI::run()
 	
 	do
 	{
-		if (window->getDim()!=oldDim)
-			nav.setRect(V2d(), window->getDim());
-		
 		nav.update();
+		
+		if (window->getDim()!=oldDim)
+		{
+			nav.setRect(V2d(), window->getDim());
+			oldDim=window->getDim();
+		}
+		
+		nav.drawBknd();
 		nav.draw();
+		
+		if (game.getColorToMove()==BLACK)
+			blackAI->nextMove();
 	}
 	while (window->nextFrame());
 }
