@@ -8,6 +8,8 @@ namespace chess
 
 struct MoveData
 {
+	MoveData()=default;
+	
 	MoveData(Square sIn, Square eIn, double scoreIn)
 	{
 		s=sIn;
@@ -68,7 +70,7 @@ ChessAI::Settings::Settings()
 	pieceValues[BISHOP]=3.4;
 	pieceValues[PAWN]=1;
 	
-	checkDepth=3;
+	checkDepth=1;
 	checkWidth=3;
 }
 
@@ -119,6 +121,9 @@ bool ChessAI::nextMove()
 
 double ChessAI::findBestMove(bool playIt, int iter)
 {
+	if (iter==0)
+		return eval(colorToMove);
+	
 	Square s, e;
 	PieceColor color=colorToMove;
 	MoveHolder moves(settings.checkWidth);
@@ -156,18 +161,34 @@ double ChessAI::findBestMove(bool playIt, int iter)
 		return 0;
 	}
 	
-	/*for (auto i=moves.begin(); i!=moves.end(); ++i)
-	{
-		err << pieceType2Name(board((*i).s)->type) << " at " << (*i).s.str() << " to " << (*i).e.str() << " has a score of " << (*i).score << err;
-	}*/
+	MoveData bestMove;
 	
-	MoveData mv=*(moves.begin());
+	bestMove.score=-1;
+	
+	for (auto i=moves.begin(); i!=moves.end(); ++i)
+	{
+		forceMove((*i).s, (*i).e);
+		double score=findBestMove(false, iter-1);
+		undo();
+		
+		if (score>bestMove.score)
+		{
+			bestMove.s=(*i).s;
+			bestMove.e=(*i).e;
+			bestMove.score=score;
+		}
+		
+		//err << pieceType2Name(board((*i).s)->type) << " at " << (*i).s.str() << " to " << (*i).e.str() << " has a score of " << (*i).score << err;
+	}
+	
+	//MoveData mv=*(moves.begin());
 	
 	//err << pieceColor2Name(myColor) << " chosing move with a score of " << mv.score << err;
 	
-	return game->playMove(mv.s, mv.e);
-	
-	return 0;
+	if (playIt)
+		return game->playMove(bestMove.s, bestMove.e);
+	else
+		return bestMove.score;
 }
 
 inline double ChessAI::eval(PieceColor color)

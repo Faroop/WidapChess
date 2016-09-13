@@ -882,11 +882,11 @@ void Game::undo()
 		Square rookS, rookE;
 		
 		rookS=Square(mv.s.x<mv.e.x?7:0, mv.s.y);
-		rookE=Square(mv.s.x+(mv.s.x<mv.e.x?1:-1), mv.s.y);
+		rookE=Square(mv.e.x+(mv.s.x<mv.e.x?-1:1), mv.s.y);
 		
+		board(rookE)->square=rookS;
 		board(rookS, board(rookE));
 		board(rookE, 0);
-		p->square=rookS;
 	}
 	
 	colorToMove=getOtherColor(colorToMove);

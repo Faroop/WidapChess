@@ -49,10 +49,12 @@ PieceDrawer::PieceDrawer()
 	
 	pieceShapes[KNIGHT].push_back(V2d(0.30, 0.00));
 	pieceShapes[KNIGHT].push_back(V2d(0.70, 0.00));
-	pieceShapes[KNIGHT].push_back(V2d(0.80, 1.00));
-	pieceShapes[KNIGHT].push_back(V2d(0.20, 0.80));
-	pieceShapes[KNIGHT].push_back(V2d(0.20, 0.60));
-	pieceShapes[KNIGHT].push_back(V2d(0.50, 0.60));
+	pieceShapes[KNIGHT].push_back(V2d(0.80, 0.80));
+	pieceShapes[KNIGHT].push_back(V2d(0.70, 1.00));
+	pieceShapes[KNIGHT].push_back(V2d(0.65, 0.85));
+	pieceShapes[KNIGHT].push_back(V2d(0.20, 0.70));
+	pieceShapes[KNIGHT].push_back(V2d(0.20, 0.50));
+	pieceShapes[KNIGHT].push_back(V2d(0.50, 0.50));
 	
 	pieceShapes[BISHOP].push_back(V2d(0.30, 0.00));
 	pieceShapes[BISHOP].push_back(V2d(0.70, 0.00));

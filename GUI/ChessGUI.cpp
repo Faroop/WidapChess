@@ -125,8 +125,8 @@ void ChessGUI::run()
 		nav.drawBknd();
 		nav.draw();
 		
-		//if (game.getColorToMove()==BLACK)
-		//	blackAI->nextMove();
+		if (game.getColorToMove()==BLACK)
+			blackAI->nextMove();
 	}
 	while (window->nextFrame());
 }
