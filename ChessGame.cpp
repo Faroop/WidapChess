@@ -255,9 +255,9 @@ bool Game::playMove(Square s, Square e)
 	{
 		forceMove(s, e);
 		
-		colorToMove=getOtherColor(colorToMove);
-		
 		setWinState();
+		
+		checkBoard();
 		
 		return true;
 	}
@@ -269,6 +269,12 @@ bool Game::playMove(Square s, Square e)
 
 bool Game::checkMovePath(Square s, Square e)
 {
+	if (!board(s))
+	{
+		err << "tried to move with a starting location that doesn't have a piece" << err;
+		return false;
+	}
+	
 	//get piece
 	Piece p=*board(s);
 	
@@ -378,10 +384,33 @@ bool Game::checkMovePath(Square s, Square e)
 		//castling
 		else if (s.y==e.y && s.y==(p.color==WHITE?0:7) && abs(e.x-s.x)==2)
 		{
-			Square rookSqr((s.x<e.x?0:7), s.y);
+			Square rookSqr((s.x<e.x?7:0), s.y);
 			
 			if (board(rookSqr) && board(rookSqr)->type==ROOK && board(rookSqr)->color==p.color)
 			{
+				Square checkSquare((s.x<e.x)?s.x+1:s.x-1, s.y);
+				
+				while (checkSquare.x!=rookSqr.x)
+				{
+					if (board(checkSquare))
+					{
+						if (reportErrors) err << "castling blocked by " << pieceType2Name(board(checkSquare)->type) << " at " << checkSquare.str() << err;
+						return false;
+					}
+					
+					if (checkSquare.x>=std::min(s.x, e.x) && checkSquare.x<=std::max(s.x, e.x) && !checkCheck(p.color, s, checkSquare))
+					{
+						if (reportErrors) err << "king would be in ckeck at " << checkSquare.str() << ", so you can't castle" << err;
+						return false;
+					}
+					
+					if (s.x<e.x)
+						++checkSquare.x;
+					else
+						--checkSquare.x;
+					
+				}
+				
 				for (auto i=history.begin(); i!=history.end(); i++)
 				{
 					Square sqr=(*i).s;
@@ -779,6 +808,7 @@ void Game::forceMove(Square s, Square e)
 	board(s, 0);
 	board(e)->square=e;
 	
+	colorToMove=getOtherColor(colorToMove);
 	history.push_back(mv);
 }
 
@@ -826,11 +856,7 @@ void Game::undo()
 	if (history.empty())
 		return;
 	
-	auto i=history.end();
-	
-	i--;
-	
-	HistoryMove mv=*i;
+	HistoryMove mv=history.back();
 	
 	Piece * p=board(mv.e);
 	
@@ -844,7 +870,7 @@ void Game::undo()
 	if (mv.killed)
 	{
 		board(mv.killed->square, mv.killed);
-		mv.p.alive=true;
+		mv.killed->alive=true;
 	}
 	
 	//restore type in case of pawn promotion
@@ -864,7 +890,76 @@ void Game::undo()
 	}
 	
 	colorToMove=getOtherColor(colorToMove);
-	history.erase(i);
+	history.pop_back();
+}
+
+bool Game::checkBoard()
+{
+	bool problem=false;
+	
+	if (!kings[WHITE]->alive)
+	{
+		err << "white king dead" << err;
+		problem=true;
+	}
+	
+	if (!kings[BLACK]->alive)
+	{
+		err << "black king dead" << err;
+		problem=true;
+	}
+	
+	Square i;
+	
+	for (i.y=0; i.y<8; ++i.y)
+	{
+		for (i.x=0; i.x<8; ++i.x)
+		{
+			if (board(i))
+			{
+				Piece p=*board(i);
+				
+				if (!p.alive)
+				{
+					err << pieceType2Name(p.type) << " at " << i.str() << " is dead but it is still on the board" << err;
+					problem=true;
+				}
+				
+				if (!(p.square==i))
+				{
+					err << pieceType2Name(p.type) << " is on board at " << i.str() << " but thinks its on " << p.square.str() << err;
+					problem=true;
+				}
+			}
+		}
+	}
+	
+	for (int i=0; i<32; ++i)
+	{
+		if (pieces[i].alive)
+		{
+			if (board(pieces[i].square)!=&pieces[i])
+			{
+				if (board(pieces[i].square)==nullptr)
+				{
+					err << pieceType2Name(pieces[i].type) << " thinks its on " << pieces[i].square.str() << " but the board there is empty" << err;
+					problem=true;
+				}
+				else if (board(pieces[i].square)->type!=pieces[i].type || board(pieces[i].square)->color!=pieces[i].color)
+				{
+					err << pieceType2Name(pieces[i].type) << " thinks its on " << pieces[i].square.str() << " but the board has a different piece there" << err;
+					problem=true;
+				}
+				else
+				{
+					err << pieceType2Name(pieces[i].type) << " thinks its on " << pieces[i].square.str() << " but the board has a pointer to a different instance of the same piece" << err;
+					problem=true;
+				}
+			}
+		}
+	}
+	
+	return problem;
 }
 
 string Game::historyToStr()

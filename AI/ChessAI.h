@@ -13,8 +13,19 @@ class ChessAI: protected Game
 {
 public:
 	
+	struct Settings
+	{
+		Settings();
+		
+		double pieceValues[6];
+		int checkDepth;
+		int checkWidth;
+	};
+	
 	ChessAI();
 	~ChessAI() {}
+	
+	Settings settings;
 	
 	void setup(Game * gameIn, PieceColor colorIn);
 	void unsetup() {isSetUp=false;}
@@ -25,15 +36,14 @@ public:
 private:
 	
 	double findBestMove(bool playIt, int iter);
-	double eval();
+	inline double eval(PieceColor color);
+	inline double evalForColor(PieceColor color);
 	
 private:
 	
 	bool isSetUp=false;
-	PieceColor color;
+	PieceColor myColor;
 	Game * game;
-	
-	int iterNum=2;
 	
 	::Error err;
 };

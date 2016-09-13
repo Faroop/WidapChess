@@ -7,7 +7,6 @@
 
 /// problems with this class:
 
-//does not have a problem with castling through or out of check
 //does not have repeat three position tie handling
 //does not have 50 move tie handling
 
@@ -86,6 +85,9 @@ public:
 	
 	//undo one move
 	void undo();
+	
+	//returns true if there is an error with the board
+	bool checkBoard();
 	
 	Piece getPiece(Square square);
 	PieceColor getColorToMove() {return colorToMove;}

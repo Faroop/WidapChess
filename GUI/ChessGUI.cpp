@@ -36,7 +36,7 @@ public:
 		addChild(&buttonContainer);
 		
 	}
-	
+
 	LabelViewUI title={"Are you sure you want to start a new game?"};
 	StackViewUI buttonContainer;
 	ButtonViewUI yes={"Yes"}, no={"No"};
@@ -66,7 +66,7 @@ ChessGUI::~ChessGUI()
 
 void ChessGUI::run()
 {
-	window->openMaximized("Widap Chess GUI");
+	window->open(V2u(1200, 1200), "Widap Chess GUI");
 	
 	NavViewUI nav;
 	
@@ -125,8 +125,8 @@ void ChessGUI::run()
 		nav.drawBknd();
 		nav.draw();
 		
-		if (game.getColorToMove()==BLACK)
-			blackAI->nextMove();
+		//if (game.getColorToMove()==BLACK)
+		//	blackAI->nextMove();
 	}
 	while (window->nextFrame());
 }
