@@ -291,7 +291,8 @@ bool Game::checkMovePath(Square s, Square e)
 		//forward pawn movement
 		if (s.x==e.x)
 		{
-			if (s.y+(p.color==WHITE?1:-1)==e.y || (s.y==(p.color==WHITE?1:6) && e.y==(p.color==WHITE?3:4)))
+			//single space
+			if (s.y+(p.color==WHITE?1:-1)==e.y)
 			{
 				if (!board(e))
 					return true;
@@ -300,6 +301,22 @@ bool Game::checkMovePath(Square s, Square e)
 					if (reportErrors) err << "pawns can only capture digonally" << err;
 					return false;
 				}
+			}
+			//two spaces
+			else if (s.y==(p.color==WHITE?1:6) && e.y==(p.color==WHITE?3:4))
+			{
+				if (board(e))
+				{
+					if (reportErrors) err << "pawns can only capture digonally" << err;
+					return false;
+				}
+				else if (board(Square((p.color==WHITE?2:5), e.y)))
+				{
+					if (reportErrors) err << "piece is in the way" << err;
+					return false;
+				}
+				else
+					return true;
 			}
 			else
 			{

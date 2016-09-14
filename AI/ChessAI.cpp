@@ -70,7 +70,7 @@ ChessAI::Settings::Settings()
 	pieceValues[BISHOP]=3.4;
 	pieceValues[PAWN]=1;
 	
-	checkDepth=1;
+	checkDepth=3;
 	checkWidth=3;
 }
 
@@ -114,6 +114,8 @@ bool ChessAI::nextMove()
 		return false;
 	}
 	
+	err << "\n\n" << err;
+	
 	bool success=findBestMove(true, settings.checkDepth);
 	
 	return success;
@@ -121,11 +123,20 @@ bool ChessAI::nextMove()
 
 double ChessAI::findBestMove(bool playIt, int iter)
 {
+	PieceColor color=colorToMove;
+	
 	if (iter==0)
-		return eval(colorToMove);
+	{
+		double score=eval(color);
+		
+		for (int j=settings.checkDepth; j>iter; --j)
+			err << "    ";
+		
+		err << "score for " << pieceColor2Name(color) << ": " << score << err;
+		return score;
+	}
 	
 	Square s, e;
-	PieceColor color=colorToMove;
 	MoveHolder moves(settings.checkWidth);
 	
 	for (int i=((color==WHITE)?0:16); i<((color==WHITE)?16:32); ++i)
@@ -167,8 +178,13 @@ double ChessAI::findBestMove(bool playIt, int iter)
 	
 	for (auto i=moves.begin(); i!=moves.end(); ++i)
 	{
+		for (int j=settings.checkDepth; j>iter; --j)
+			err << "    ";
+		
+		err << pieceColor2Name(color) << " " << pieceType2Name(board((*i).s)->type) << " from " << (*i).s.str() << " to " << (*i).e.str() << err;
+		
 		forceMove((*i).s, (*i).e);
-		double score=findBestMove(false, iter-1);
+		double score=1-findBestMove(false, iter-1);
 		undo();
 		
 		if (score>bestMove.score)
@@ -181,14 +197,23 @@ double ChessAI::findBestMove(bool playIt, int iter)
 		//err << pieceType2Name(board((*i).s)->type) << " at " << (*i).s.str() << " to " << (*i).e.str() << " has a score of " << (*i).score << err;
 	}
 	
+	for (int j=settings.checkDepth; j>iter; --j)
+			err << "    ";
+		
+	err << "best score for " << pieceColor2Name(color) << ": " << bestMove.score << err;
+	
 	//MoveData mv=*(moves.begin());
 	
 	//err << pieceColor2Name(myColor) << " chosing move with a score of " << mv.score << err;
 	
 	if (playIt)
+	{
 		return game->playMove(bestMove.s, bestMove.e);
+	}
 	else
+	{
 		return bestMove.score;
+	}
 }
 
 inline double ChessAI::eval(PieceColor color)
