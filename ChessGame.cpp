@@ -768,8 +768,77 @@ void Game::setWinState()
 		else
 			winner=getOtherColor(colorToMove);
 	}
+	else
+	{
+		if (checkForBoringTie())
+		{
+			gameOver=true;
+			winner=NO_COLOR;
+		}
+		else
+		{
+			gameOver=false;
+			winner=NO_COLOR;
+		}
+	}
 	
 	reportErrors=reportErrorsWasOn;
+}
+
+bool Game::checkForBoringTie()
+{
+	auto i=history.end();
+	int j=0;
+	
+	while (i!=history.begin())
+	{
+		--i;
+		
+		if ((*i).killed!=nullptr || (*i).p.type==PAWN)
+		{
+			break;
+		}
+		
+		j++;
+	}
+	
+	if (j>=50)
+		return true;
+	
+	for (int k=4; k<=j/3; ++k)
+	{
+		bool foundDifference=false;
+		
+		for (int l=0; l<k; ++l)
+		{
+			HistoryMove mv0=history[history.size()-l-1], mv1=history[history.size()-k-l-1];
+			
+			if (mv0.s==mv1.s && mv0.e==mv1.e && mv0.p.type==mv1.p.type && mv0.p.color==mv1.p.color)
+			{
+				HistoryMove mv2=history[history.size()-k*2-l-1];
+				
+				if (mv2.s==mv1.s && mv2.e==mv1.e && mv2.p.type==mv1.p.type && mv2.p.color==mv1.p.color)
+				{
+					
+				}
+				else
+				{
+					foundDifference=true;
+					break;
+				}
+			}
+			else
+			{
+				foundDifference=true;
+				break;
+			}
+		}
+		
+		if (!foundDifference)
+			return true;
+	}
+	
+	return false;
 }
 
 void Game::forceMove(Square s, Square e)
@@ -908,6 +977,9 @@ void Game::undo()
 	
 	colorToMove=getOtherColor(colorToMove);
 	history.pop_back();
+	
+	if (getIfGameOver())
+		setWinState();
 }
 
 bool Game::checkBoard()

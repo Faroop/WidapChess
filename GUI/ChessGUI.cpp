@@ -51,6 +51,8 @@ ChessGUI::ChessGUI()
 	
 	whiteAI->setup(&game, WHITE);
 	blackAI->setup(&game, BLACK);
+	
+	setupAIs();
 }
 
 ChessGUI::~ChessGUI()
@@ -100,6 +102,14 @@ void ChessGUI::run()
 		}
 	);
 	
+	ButtonViewUI whiteAIBtn("White AI");
+	toolbar.addChild(&whiteAIBtn);
+	whiteAIBtn.setClickAction([this](){autoPlayWhite=!autoPlayWhite;});
+	
+	ButtonViewUI blackAIBtn("Black AI");
+	toolbar.addChild(&blackAIBtn);
+	blackAIBtn.setClickAction([this](){autoPlayBlack=!autoPlayBlack;});
+	
 	StackViewUI boardParent;
 	boardParent.setLoyout(StackViewUI::LEADING, StackViewUI::FILL, false, false);
 	boardParent.theme.outerBuffer.zero(); boardParent.theme.innerBuffer=0; boardParent.contentsChanged();
@@ -125,12 +135,48 @@ void ChessGUI::run()
 		nav.drawBknd();
 		nav.draw();
 		
-		if (game.getColorToMove()==BLACK)
-			blackAI->nextMove();
+		if (!game.getIfGameOver())
+		{
+			if (game.getColorToMove()==WHITE && autoPlayWhite)
+				whiteAI->nextMove();
+			else if (game.getColorToMove()==BLACK && autoPlayBlack)
+				blackAI->nextMove();
+		}
 	}
 	while (window->nextFrame());
 }
 
-
+void ChessGUI::setupAIs()
+{
+	autoPlayWhite=false;
+	autoPlayBlack=false;
+	
+	ChessAI::Settings s;
+	
+	s.pieceValues[KING]=12; //giving it a really high score would just mess up the rest of the calculations
+	s.pieceValues[QUEEN]=10;
+	s.pieceValues[ROOK]=5;
+	s.pieceValues[KNIGHT]=3.6;
+	s.pieceValues[BISHOP]=3.4;
+	s.pieceValues[PAWN]=1;
+	
+	s.checkDepth=2;
+	s.checkWidth=4;
+	
+	whiteAI->settings=s;
+	
+	
+	s.pieceValues[KING]=12; //giving it a really high score would just mess up the rest of the calculations
+	s.pieceValues[QUEEN]=10;
+	s.pieceValues[ROOK]=5;
+	s.pieceValues[KNIGHT]=3.6;
+	s.pieceValues[BISHOP]=3.4;
+	s.pieceValues[PAWN]=1;
+	
+	s.checkDepth=2;
+	s.checkWidth=3;
+	
+	blackAI->settings=s;
+}
 
 

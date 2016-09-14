@@ -2,13 +2,11 @@
 #pragma once
 
 #include <string>
-#include <list>
+#include <vector>
 #include "Error.h"
 
 /// problems with this class:
-
-//does not have repeat three position tie handling
-//does not have 50 move tie handling
+///NONE!!!!!
 
 namespace chess
 {
@@ -114,6 +112,9 @@ protected:
 	//check for a win state and set the variables
 	void setWinState();
 	
+	//returns true if the same position has been reached 3 times or if there have been 50 moves without piece capture or pawn movement
+	bool checkForBoringTie();
+	
 	//move the source piece to the destination; doesn't do any checks or aditional actions (castling takes two of these)
 	void forceMove(Square src, Square dst);
 	
@@ -133,7 +134,7 @@ protected:
 	//the color to make the next move
 	PieceColor colorToMove;
 	
-	std::list<HistoryMove> history;
+	std::vector<HistoryMove> history;
 	
 	//if the report errors when checking moves
 	bool reportErrors=true;

@@ -15,6 +15,8 @@ public:
 	//run the app, function will exit when the window is closed
 	void run();
 	
+	void setupAIs();
+	
 private:
 	
 	void processInput();
@@ -40,6 +42,7 @@ private:
 	
 	widap::WindowBase * window;
 	chess::Game game;
+	bool autoPlayWhite=false, autoPlayBlack=false;
 	chess::ChessAI * whiteAI=nullptr, * blackAI=nullptr;
 };
 

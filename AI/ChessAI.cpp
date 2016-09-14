@@ -1,7 +1,7 @@
 
 #include "ChessAI.h"
-#include <list>
-using std::list;
+#include <vector>
+using std::vector;
 
 namespace chess
 {
@@ -21,13 +21,14 @@ struct MoveData
 	double score;
 };
 
-class MoveHolder: public list<MoveData>
+class MoveHolder: public vector<MoveData>
 {
 public:
 	
 	MoveHolder(int maxSizeIn)
 	{
 		maxSize=maxSizeIn;
+		reserve(maxSizeIn);
 	}
 	
 	inline void add(MoveData in)
@@ -63,15 +64,15 @@ private:
 
 ChessAI::Settings::Settings()
 {
-	pieceValues[KING]=1; //giving it a really high score would just mess up the rest of the calculations
+	pieceValues[KING]=12; //giving it a really high score would just mess up the rest of the calculations
 	pieceValues[QUEEN]=10;
 	pieceValues[ROOK]=5;
 	pieceValues[KNIGHT]=3.6;
 	pieceValues[BISHOP]=3.4;
 	pieceValues[PAWN]=1;
 	
-	checkDepth=3;
-	checkWidth=3;
+	checkDepth=4;
+	checkWidth=8;
 }
 
 ChessAI::ChessAI()
@@ -124,18 +125,6 @@ bool ChessAI::nextMove()
 double ChessAI::findBestMove(bool playIt, int iter)
 {
 	PieceColor color=colorToMove;
-	
-	if (iter==0)
-	{
-		double score=eval(color);
-		
-		for (int j=settings.checkDepth; j>iter; --j)
-			err << "    ";
-		
-		err << "score for " << pieceColor2Name(color) << ": " << score << err;
-		return score;
-	}
-	
 	Square s, e;
 	MoveHolder moves(settings.checkWidth);
 	
@@ -168,8 +157,10 @@ double ChessAI::findBestMove(bool playIt, int iter)
 	
 	if (moves.size()<1)
 	{
-		err << "failed to find valid move" << err;
-		return 0;
+		if (checkCheck(color, kings[color]->square, kings[color]->square))
+			return 0.5;
+		else
+			return 0.0;
 	}
 	
 	MoveData bestMove;
@@ -184,8 +175,24 @@ double ChessAI::findBestMove(bool playIt, int iter)
 		err << pieceColor2Name(color) << " " << pieceType2Name(board((*i).s)->type) << " from " << (*i).s.str() << " to " << (*i).e.str() << err;
 		
 		forceMove((*i).s, (*i).e);
-		double score=1-findBestMove(false, iter-1);
+		
+		double score=0;
+		
+		if (iter<=0)
+		{
+			score=eval(color);
+		}
+		else
+		{
+			score=1-findBestMove(false, iter-1);
+		}
+		
 		undo();
+		
+		for (int j=settings.checkDepth+1; j>iter; --j)
+			err << "    ";
+	
+		err << "best score for " << pieceColor2Name(myColor) << ": " << ((myColor==color)?score:1-score) << err;
 		
 		if (score>bestMove.score)
 		{
@@ -193,18 +200,7 @@ double ChessAI::findBestMove(bool playIt, int iter)
 			bestMove.e=(*i).e;
 			bestMove.score=score;
 		}
-		
-		//err << pieceType2Name(board((*i).s)->type) << " at " << (*i).s.str() << " to " << (*i).e.str() << " has a score of " << (*i).score << err;
 	}
-	
-	for (int j=settings.checkDepth; j>iter; --j)
-			err << "    ";
-		
-	err << "best score for " << pieceColor2Name(color) << ": " << bestMove.score << err;
-	
-	//MoveData mv=*(moves.begin());
-	
-	//err << pieceColor2Name(myColor) << " chosing move with a score of " << mv.score << err;
 	
 	if (playIt)
 	{
