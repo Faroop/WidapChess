@@ -310,7 +310,7 @@ bool Game::checkMovePath(Square s, Square e)
 					if (reportErrors) err << "pawns can only capture digonally" << err;
 					return false;
 				}
-				else if (board(Square((p.color==WHITE?2:5), e.y)))
+				else if (board(Square(e.x, (p.color==WHITE?2:5))))
 				{
 					if (reportErrors) err << "piece is in the way" << err;
 					return false;
@@ -796,11 +796,20 @@ bool Game::checkForBoringTie()
 		
 		if ((*i).killed!=nullptr || (*i).p.type==PAWN)
 		{
+			/*if ((*i).killed!=nullptr)
+				err << "stopped because piece was killed" << err;
+			
+			if ((*i).p.type==PAWN)
+				err << "stopped because pawn was moved" << err;
+			*/
+			
 			break;
 		}
 		
 		j++;
 	}
+	
+	//err << "\n\n\nj: " << j << err;
 	
 	if (j>=50)
 		return true;
@@ -818,9 +827,7 @@ bool Game::checkForBoringTie()
 				HistoryMove mv2=history[history.size()-k*2-l-1];
 				
 				if (mv2.s==mv1.s && mv2.e==mv1.e && mv2.p.type==mv1.p.type && mv2.p.color==mv1.p.color)
-				{
-					
-				}
+				{ }
 				else
 				{
 					foundDifference=true;

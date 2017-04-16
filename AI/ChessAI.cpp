@@ -128,6 +128,12 @@ double ChessAI::findBestMove(bool playIt, int iter)
 	Square s, e;
 	MoveHolder moves(settings.checkWidth);
 	
+	if (checkForBoringTie())
+	{
+		//err << "\n\n\n		BORING TIE FOUND\n\n\n" << err; 
+		return 0.5;
+	}
+	
 	for (int i=((color==WHITE)?0:16); i<((color==WHITE)?16:32); ++i)
 	{
 		if (pieces[i].alive)
